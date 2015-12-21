@@ -36,7 +36,7 @@ import com.facebook.rebound.SpringUtil;
  * @author lumeng on 15/12/18.
  *         E-Mail: lumenghz@gmail.com
  */
-public class PaperView extends FrameLayout implements View.OnTouchListener, GestureDetector.OnGestureListener {
+public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     /**
      * This is the distance of your finger.
@@ -68,7 +68,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener, Gest
     /**
      * Value of magnification(放大率).
      */
-    private static float SCALE;
+    private float SCALE;
 
     /**
      * Distance that bottom view should translateDistance when it comes to Scale Animations
@@ -96,7 +96,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener, Gest
         super(context, attrs, defStyle);
 
         springSystem = SpringSystem.create();
-        gestureDetector = new GestureDetector(context, this);
+        gestureDetector = new GestureDetector(context, new gestursListener());
 
         popAnimation = springSystem.createSpring()
                 .setSpringConfig(SpringConfig.fromBouncinessAndSpeed(5, 10))
@@ -117,7 +117,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener, Gest
         int contentHeight = layer.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
         translateDistance = (double) (screen[1] - layer.getHeight()) / 2;
-        maxMoveDistance = SCROLL_MAX_DISTANCE * (SCALE - 1);
     }
 
     private void popAnimation(boolean on) {
@@ -153,76 +152,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener, Gest
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    @Override
-    public boolean onDown(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public void onShowPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onSingleTapUp(MotionEvent e) {
-        return false;
-    }
-
-    @Override
-    public synchronized boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
-        Log.d("PaperView", "onScroll");
-        float beginY = e1.getY();
-        float endY = e2.getY();
-
-        float distance = endY - beginY;
-        // translateDistance > 0 means move down, translateDistance < 0 means move up
-
-        // TODO: 15/12/21 solve the problem when scroll down after scroll up witout finger leave
-
-        if (distance < 0 && distance >= -SCROLL_MAX_DISTANCE) {
-            // change bigger
-            float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
-            layer.setScaleX(scaleValue);
-            layer.setScaleY(scaleValue);
-
-            float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-            layer.setTranslationY(-move);
-            popAnimation.setCurrentValue(scaleValue - 1);
-
-            BOTTOM_STATUS = STATUS_CHANGE_BIGGER;
-        } else if (distance > 0 && distance < SCROLL_MAX_DISTANCE) {
-            // change smaller
-            float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
-            layer.setScaleX(scaleValue);
-            layer.setScaleY(scaleValue);
-
-            // TODO: 15/12/21 figure out why it doesn't need translate when it getting smaller
-//            float move = (float) distance / SCROLL_MAX_DISTANCE * (float) translateDistance;
-//            layer.setTranslationY(-move);
-            popAnimation.setCurrentValue(scaleValue);
-            BOTTOM_STATUS = STATUS_CHANGE_SMALL;
-        }
-
-        return true;
-    }
-
-    @Override
-    public void onLongPress(MotionEvent e) {
-    }
-
-    @Override
-    public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-//        if (velocityY < 0) {
-//            popAnimation(true);
-//        } else {
-//            popAnimation(false);
-//        }
-        return false;
-    }
-
+    /**
+     * This method is used for deal width event dispatch
+     */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
-        Log.d("PaperView", "onTouch");
-        Log.d("PaperView", "v:" + v.getId());
         if (event.getAction() == MotionEvent.ACTION_UP) {
             return this.onTouchEvent(event);
         } else {
@@ -232,16 +166,87 @@ public class PaperView extends FrameLayout implements View.OnTouchListener, Gest
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        Log.d("PaperView", "onTouchEvent");
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            if (BOTTOM_STATUS == STATUS_CHANGE_BIGGER) {
-                popAnimation(true);
-                BOTTOM_STATUS = STATUS_BIGGER;
-            } else if (BOTTOM_STATUS == STATUS_CHANGE_SMALL) {
-                popAnimation(false);
-                BOTTOM_STATUS = STATUS_NORMAL;
-            }
+        if (BOTTOM_STATUS == STATUS_CHANGE_BIGGER) {
+            popAnimation(true);
+            BOTTOM_STATUS = STATUS_BIGGER;
+        } else if (BOTTOM_STATUS == STATUS_CHANGE_SMALL) {
+            popAnimation(false);
+            BOTTOM_STATUS = STATUS_NORMAL;
         }
         return true;
+    }
+
+    @Override
+    public boolean dispatchTouchEvent(MotionEvent ev) {
+        this.gestureDetector.onTouchEvent(ev);
+        return super.dispatchTouchEvent(ev);
+    }
+
+    private class gestursListener implements GestureDetector.OnGestureListener {
+        protected MotionEvent lastOnDownEvent = null;
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            // 用户轻触触摸屏, 由1个MotionEvent ACTION_DOWN触发
+            return false;
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            // 用户轻触触摸屏，尚未松开或拖动，由一个1个MotionEvent ACTION_DOWN触发
+            // 注意和onDown()的区别，强调的是没有松开或者拖动的状态
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            // 用户（轻触触摸屏后）松开，由一个1个MotionEvent ACTION_UP触发
+            return false;
+        }
+
+        @Override
+        public boolean onScroll(MotionEvent e1, MotionEvent e2, float distanceX, float distanceY) {
+            float beginY = e1.getY();
+            float endY = e2.getY();
+
+            float distance = endY - beginY;
+            // translateDistance > 0 means move down, translateDistance < 0 means move up
+
+            // TODO: 15/12/21 solve the problem when scroll down after scroll up without finger leave
+
+            if (distance < 0 && distance >= -SCROLL_MAX_DISTANCE) {
+                // change bigger
+                float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
+                layer.setScaleX(scaleValue);
+                layer.setScaleY(scaleValue);
+
+                float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
+                layer.setTranslationY(-move);
+                popAnimation.setCurrentValue(scaleValue - 1);
+
+                BOTTOM_STATUS = STATUS_CHANGE_BIGGER;
+            } else if (distance > 0 && distance < SCROLL_MAX_DISTANCE) {
+                // change smaller
+                float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
+                layer.setScaleX(scaleValue);
+                layer.setScaleY(scaleValue);
+
+                // TODO: 15/12/21 figure out why it doesn't need translate when it getting smaller
+                popAnimation.setCurrentValue(scaleValue);
+                BOTTOM_STATUS = STATUS_CHANGE_SMALL;
+            }
+
+            return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+
+        }
+
+        @Override
+        public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
+            // 用户按下触摸屏、快速移动后松开，由1个MotionEvent ACTION_DOWN, 多个ACTION_MOVE, 1个ACTION_UP触发
+            return true;
+        }
     }
 }
