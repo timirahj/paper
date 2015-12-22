@@ -13,27 +13,27 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/landscape"/>
 
-    <com.lumeng.paper.PaperView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@android:color/transparent">
+    <!--<com.lumeng.paper.PaperView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent"-->
+    <!--android:background="@android:color/transparent">-->
 
-        <com.lumeng.paper.ReboundHorizontalScrollView
-            android:id="@+id/hrozontalscrollview"
+    <com.lumeng.paper.PaperHorizontalScrollView
+        android:id="@+id/hrozontalscrollview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@android:color/transparent"
+        android:scrollbars="none">
+
+        <LinearLayout
+            android:id="@+id/gallery"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
             android:background="@android:color/transparent"
-            android:scrollbars="none">
+            android:orientation="horizontal"
+            android:paddingLeft="2dp"/>
 
-            <LinearLayout
-                android:id="@+id/gallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="2dp"
-                android:orientation="horizontal"
-                android:background="@android:color/transparent"/>
-
-        </com.lumeng.paper.ReboundHorizontalScrollView>
-    </com.lumeng.paper.PaperView>
+    </com.lumeng.paper.PaperHorizontalScrollView>
+    <!--</com.lumeng.paper.PaperView>-->
 </FrameLayout>

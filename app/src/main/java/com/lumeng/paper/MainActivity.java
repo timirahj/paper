@@ -40,7 +40,7 @@ public class MainActivity extends Activity {
     private FrameLayout mRootView;
 //    private Spring mScaleSpring;
 
-    private ReboundHorizontalScrollView scrollView;
+    private PaperHorizontalScrollView scrollView;
     private HorizontalScrollViewAdapter adapter;
     private List<Integer> datas = new ArrayList<Integer>(Arrays.asList(
             R.mipmap.one, R.mipmap.two, R.mipmap.three,
@@ -54,10 +54,10 @@ public class MainActivity extends Activity {
         setContentView(R.layout.activity_main);
         mRootView = (FrameLayout) findViewById(R.id.root_view);
 
-        scrollView = (ReboundHorizontalScrollView) findViewById(R.id.hrozontalscrollview);
+        scrollView = (PaperHorizontalScrollView) findViewById(R.id.hrozontalscrollview);
         adapter = new HorizontalScrollViewAdapter(this, datas);
 
-        scrollView.setCurrentImageChangeListener(new ReboundHorizontalScrollView.CurrentImageChangeListener() {
+        scrollView.setCurrentImageChangeListener(new PaperHorizontalScrollView.CurrentImageChangeListener() {
             @Override
             public void onCurrentImgChanged(int position, View viewIndicator) {
 

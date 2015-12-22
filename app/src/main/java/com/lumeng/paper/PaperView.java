@@ -157,6 +157,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      */
     @Override
     public boolean onTouch(View v, MotionEvent event) {
+
         if (event.getAction() == MotionEvent.ACTION_UP) {
             return this.onTouchEvent(event);
         } else {
@@ -183,7 +184,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     }
 
     private class gestursListener implements GestureDetector.OnGestureListener {
-        protected MotionEvent lastOnDownEvent = null;
 
         @Override
         public boolean onDown(MotionEvent e) {
