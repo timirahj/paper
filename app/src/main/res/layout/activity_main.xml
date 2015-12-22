@@ -13,27 +13,41 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/landscape"/>
 
-    <!--<com.lumeng.paper.PaperView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent"-->
-    <!--android:background="@android:color/transparent">-->
+    <com.lumeng.paper.PaperView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
 
-    <com.lumeng.paper.PaperHorizontalScrollView
-        android:id="@+id/hrozontalscrollview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:background="@android:color/transparent"
-        android:scrollbars="none">
-
-        <LinearLayout
-            android:id="@+id/gallery"
+        <com.lumeng.paper.ReboundHorizontalScrollView
+            android:id="@+id/hrozontalscrollview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
             android:background="@android:color/transparent"
-            android:orientation="horizontal"
-            android:paddingLeft="2dp"/>
+            android:scrollbars="none">
 
-    </com.lumeng.paper.PaperHorizontalScrollView>
+            <LinearLayout
+                android:id="@+id/gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:orientation="horizontal"
+                android:paddingLeft="2dp"/>
+
+        </com.lumeng.paper.ReboundHorizontalScrollView>
+
+    </com.lumeng.paper.PaperView>
+
+
+    <!--<com.lumeng.paper.PaperView-->
+    <!--android:layout_width="match_parent"-->
+    <!--android:layout_height="match_parent">-->
+
+    <!--<ImageView-->
+    <!--android:id="@+id/bottom"-->
+    <!--android:layout_width="1230px"-->
+    <!--android:layout_height="650px"-->
+    <!--android:layout_gravity="bottom"-->
+    <!--android:src="@mipmap/bottom"/>-->
+
     <!--</com.lumeng.paper.PaperView>-->
 </FrameLayout>

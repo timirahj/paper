@@ -38,32 +38,14 @@ import com.facebook.rebound.SpringUtil;
  */
 public class PaperView extends FrameLayout implements View.OnTouchListener {
 
-    /**
-     * This is the distance of your finger.
-     */
-    private static final int SCROLL_MAX_DISTANCE = 300;
-    private static final int STATUS_NORMAL = 1;
-    private static final int STATUS_BIGGER = 2;
-    private static final int STATUS_CHANGE_BIGGER = 3;
-    private static final int STATUS_CHANGE_SMALL = 4;
+    private static final int SCROLL_MAX_DISTANCE = 400;
 
-    /**
-     * Load status of bottom. It used when user's finger leave screen of cellphone
-     * {@link #STATUS_NORMAL} present the original status
-     * {@link #STATUS_BIGGER} present the FULLSCREEN status
-     */
-    private int BOTTOM_STATUS = STATUS_NORMAL;
+    private Status status = new Status();
 
     /**
      * Save Screen parameters int Array
      */
     private int[] screen;
-
-    /**
-     * <b>Useless now</b>
-     * Max move distance of the bottomView when it Scale
-     */
-    private static float maxMoveDistance;
 
     /**
      * Value of magnification(放大率).
@@ -106,14 +88,15 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                         setPopAnimationProgress((float) spring.getCurrentValue());
                     }
                 });
+
+        this.setLongClickable(true);
+        this.setOnTouchListener(this);
     }
 
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         layer = getChildAt(0);
-        layer.setOnTouchListener(this);
-        layer.setLongClickable(true);
         int contentHeight = layer.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
         translateDistance = (double) (screen[1] - layer.getHeight()) / 2;
@@ -152,54 +135,42 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    /**
-     * This method is used for deal width event dispatch
-     */
-    @Override
-    public boolean onTouch(View v, MotionEvent event) {
-
-        if (event.getAction() == MotionEvent.ACTION_UP) {
-            return this.onTouchEvent(event);
-        } else {
-            return gestureDetector.onTouchEvent(event);
-        }
-    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (BOTTOM_STATUS == STATUS_CHANGE_BIGGER) {
+        if (status.tend == Status.STATUS_CHANGE_BIGGER) {
             popAnimation(true);
-            BOTTOM_STATUS = STATUS_BIGGER;
-        } else if (BOTTOM_STATUS == STATUS_CHANGE_SMALL) {
+            status.preMode = Status.STATUS_BIGGER;
+            status.currentMode = Status.STATUS_BIGGER;
+        } else if (status.tend == Status.STATUS_CHANGE_SMALL) {
             popAnimation(false);
-            BOTTOM_STATUS = STATUS_NORMAL;
+            status.preMode = Status.STATUS_NORMAL;
+            status.currentMode = Status.STATUS_NORMAL;
         }
-        return true;
+        return false;
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent ev) {
-        this.gestureDetector.onTouchEvent(ev);
-        return super.dispatchTouchEvent(ev);
+        // TODO: 15/12/22 add scroll tend judgement
+        layer.onTouchEvent(ev);
+        this.onTouch(layer, ev);
+        return true;
     }
 
     private class gestursListener implements GestureDetector.OnGestureListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
-            // 用户轻触触摸屏, 由1个MotionEvent ACTION_DOWN触发
             return false;
         }
 
         @Override
         public void onShowPress(MotionEvent e) {
-            // 用户轻触触摸屏，尚未松开或拖动，由一个1个MotionEvent ACTION_DOWN触发
-            // 注意和onDown()的区别，强调的是没有松开或者拖动的状态
         }
 
         @Override
         public boolean onSingleTapUp(MotionEvent e) {
-            // 用户（轻触触摸屏后）松开，由一个1个MotionEvent ACTION_UP触发
             return false;
         }
 
@@ -209,30 +180,43 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
             float endY = e2.getY();
 
             float distance = endY - beginY;
-            // translateDistance > 0 means move down, translateDistance < 0 means move up
+            // distance > 0 means move down, translateDistance < 0 means move up
 
-            // TODO: 15/12/21 solve the problem when scroll down after scroll up without finger leave
+            if (distance < 0 && distance >= -(SCROLL_MAX_DISTANCE + 10)) {
+                if (status.preMode == Status.STATUS_CHANGE_SMALL) {
+                    status.tend = Status.STATUS_CHANGE_BIGGER;
+                }
+                if (status.preMode == Status.STATUS_CHANGE_BIGGER || status.preMode == Status.STATUS_NORMAL) {
+                    // change bigger
+                    float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
+                    layer.setScaleX(scaleValue);
+                    layer.setScaleY(scaleValue);
 
-            if (distance < 0 && distance >= -SCROLL_MAX_DISTANCE) {
-                // change bigger
-                float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
-                layer.setScaleX(scaleValue);
-                layer.setScaleY(scaleValue);
+                    float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
+                    layer.setTranslationY(-move);
 
-                float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-                layer.setTranslationY(-move);
-                popAnimation.setCurrentValue(scaleValue - 1);
+                    popAnimation.setCurrentValue(scaleValue - 1);
 
-                BOTTOM_STATUS = STATUS_CHANGE_BIGGER;
-            } else if (distance > 0 && distance < SCROLL_MAX_DISTANCE) {
-                // change smaller
-                float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
-                layer.setScaleX(scaleValue);
-                layer.setScaleY(scaleValue);
+                    status.preMode = Status.STATUS_CHANGE_BIGGER;
+                    status.tend = Status.STATUS_CHANGE_BIGGER;
+                }
 
-                // TODO: 15/12/21 figure out why it doesn't need translate when it getting smaller
-                popAnimation.setCurrentValue(scaleValue);
-                BOTTOM_STATUS = STATUS_CHANGE_SMALL;
+            } else if (distance > 0 && distance < SCROLL_MAX_DISTANCE + 10) {
+                if (status.preMode == Status.STATUS_CHANGE_BIGGER) {
+                    status.tend = Status.STATUS_CHANGE_SMALL;
+                }
+                if (status.preMode == Status.STATUS_CHANGE_SMALL || status.preMode == Status.STATUS_BIGGER) {
+                    // change smaller
+                    float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
+                    layer.setScaleX(scaleValue);
+                    layer.setScaleY(scaleValue);
+
+                    // TODO: 15/12/21 figure out why it doesn't need translate when it getting smaller
+                    popAnimation.setCurrentValue(scaleValue);
+
+                    status.preMode = Status.STATUS_CHANGE_SMALL;
+                    status.tend = Status.STATUS_CHANGE_SMALL;
+                }
             }
 
             return true;
@@ -249,4 +233,34 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
             return true;
         }
     }
+
+    /**
+     * This method is used for deal with event dispatch
+     */
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_UP) {
+            return this.onTouchEvent(event);
+        } else {
+            return gestureDetector.onTouchEvent(event);
+        }
+    }
+
+    /**
+     * This class is used for mark, mark status of bottom view
+     */
+    private static class Status {
+        /**
+         * This is the distance of your finger.
+         */
+        private static final int STATUS_NORMAL = 1;
+        private static final int STATUS_BIGGER = 2;
+        private static final int STATUS_CHANGE_BIGGER = 3;
+        private static final int STATUS_CHANGE_SMALL = 4;
+
+        private int preMode = STATUS_NORMAL;
+        private int currentMode = STATUS_NORMAL;
+        private int tend = STATUS_CHANGE_BIGGER;
+    }
+
 }
