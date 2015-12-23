@@ -24,6 +24,7 @@ import com.squareup.leakcanary.RefWatcher;
 
 /**
  * @author lumeng on 15/12/22.
+ * Add Memory leak check
  */
 public class PaperApplication extends Application {
 
@@ -37,7 +38,8 @@ public class PaperApplication extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        LeakCanary.install(this);
+        refWatcher = LeakCanary.install(this);
+//        LeakCanary.install(this);
     }
 
 }

@@ -18,8 +18,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
 
     /**
      * 图片滚动时的回调接口
-     *
-     * @author zhy
      */
     public interface CurrentImageChangeListener {
         void onCurrentImgChanged(int position, View viewIndicator);
@@ -27,8 +25,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
 
     /**
      * 条目点击时的回调
-     *
-     * @author zhy
      */
     public interface OnItemClickListener {
         void onClick(View view, int pos);

@@ -40,8 +40,6 @@ import java.util.List;
  */
 public class MainActivity extends Activity {
 
-    private FrameLayout mRootView;
-
     private ReboundHorizontalScrollView scrollView;
     private HorizontalScrollViewAdapter adapter;
     private List<Integer> datas = new ArrayList<Integer>(Arrays.asList(
@@ -52,9 +50,10 @@ public class MainActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_main);
-        mRootView = (FrameLayout) findViewById(R.id.root_view);
+
+//        RefWatcher refWatcher = PaperApplication.getRefWatcher(this);
+//        refWatcher.watch(this);
 
         scrollView = (ReboundHorizontalScrollView) findViewById(R.id.hrozontalscrollview);
         adapter = new HorizontalScrollViewAdapter(this, datas);
