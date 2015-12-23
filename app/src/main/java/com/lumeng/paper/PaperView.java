@@ -151,10 +151,44 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     }
 
     @Override
-    public boolean dispatchTouchEvent(MotionEvent ev) {
+    public boolean dispatchTouchEvent(MotionEvent event) {
+//        int flag = 0, count = 0;
+//        float posX = 0, posY = 0, curPosX = 0, curPosY = 0;
+//
+//        switch (event.getAction()) {
+//            case MotionEvent.ACTION_DOWN:
+//                posX = event.getX();
+//                posY = event.getY();
+//                break;
+//            case MotionEvent.ACTION_MOVE:
+//                curPosX = event.getX();
+//                curPosY = event.getY();
+//                flag = 1;
+//                count = 1;
+//                break;
+//            case MotionEvent.ACTION_UP:
+//                flag = 0;
+//                count = 0;
+//        }
+//        if (flag == 1) {
+//            if (count == 1) {
+//                if (Math.abs(curPosX - posX) < Math.abs(curPosY - posY)) {
+//                    this.onTouch(layer, event);
+//                    count = 2;
+//                } else {
+//                    flag = 2;
+//                }
+//            }
+//            if (count == 2) {
+//                this.onTouch(layer, event);
+//            }
+//        }
+
+//        layer.onTouchEvent(event);
+
         // TODO: 15/12/22 add scroll tend judgement
-        layer.onTouchEvent(ev);
-        this.onTouch(layer, ev);
+        layer.onTouchEvent(event);
+        this.onTouch(layer, event);
         return true;
     }
 
