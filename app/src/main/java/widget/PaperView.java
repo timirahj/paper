@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -65,6 +66,9 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     private View layer;
 
     private GestureDetector gestureDetector;
+
+    private float mLastMotionX;//滑动过程中，x方向的初始坐标
+    private float mLastMotionY;//滑动过程中，y方向的初始坐标
 
     public PaperView(Context context) {
         this(context, null);
@@ -147,58 +151,47 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
             status.preMode = Status.STATUS_NORMAL;
             status.currentMode = Status.STATUS_NORMAL;
         }
-        return false;
+        return true;
     }
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        // TODO: 15/12/25 This is the code ready to judge direction
-//        int flag = 0, count = 0;
-//        float posX = 0, posY = 0, curPosX = 0, curPosY = 0;
-//
-//        switch (event.getAction()) {
-//            case MotionEvent.ACTION_DOWN:
-//                posX = event.getX();
-//                posY = event.getY();
-//                break;
-//            case MotionEvent.ACTION_MOVE:
-//                curPosX = event.getX();
-//                curPosY = event.getY();
-//                flag = 1;
-//                count = 1;
-//                break;
-//            case MotionEvent.ACTION_UP:
-//                flag = 0;
-//                count = 0;
-//        }
-//        if (flag == 1) {
-//            if (count == 1) {
-//                if (Math.abs(curPosX - posX) < Math.abs(curPosY - posY)) {
-//                    this.onTouch(layer, event);
-//                    count = 2;
-//                } else {
-//                    flag = 2;
-//                }
-//            }
-//            if (count == 2) {
-//                this.onTouch(layer, event);
-//            }
-//        }
-//        layer.onTouchEvent(event);
+        Log.d("PaperView", "dispatchTouch");
+        final int action = event.getAction();
+        final float x = event.getX();
+        final float y = event.getY();
+        int flag = 0;
+        switch (action) {
+            case MotionEvent.ACTION_DOWN:
+                Log.d("PaperView", "down");
+                mLastMotionX = x;
+                mLastMotionY = y;
+            case MotionEvent.ACTION_MOVE:
+                Log.d("PaperView", "move");
+                final int deltaX = (int) (mLastMotionX - x);
+                final int deltaY = (int) (mLastMotionY - y);
+                boolean xMoved = Math.abs(deltaX) > Math.abs(deltaY);
+                Log.d("PaperView", "xMoved:" + xMoved);
 
-        // TODO: 15/12/22 add scroll tend judgement
+                if (xMoved) {
+                    layer.onTouchEvent(event);
+                    flag = 1;
+                } else {
+                    this.onTouch(layer, event);
+                    layer.onTouchEvent(event);
+                    flag = 2;
+                    return true;
+                }
+                break;
+        }
 
-//        if (isViewUnder(layer, (int) event.getX(), (int) event.getY())) {
-//            layer.onTouchEvent(event);
-//            this.onTouch(layer, event);
-//            return true;
-//        } else {
-//            super.dispatchTouchEvent(event);
-//            return false;
-//        }
-        layer.onTouchEvent(event);
-        this.onTouch(layer, event);
-        return true;
+        if (flag == 1) {
+            layer.onTouchEvent(event);
+        } else {
+            this.onTouch(layer, event);
+            layer.onTouchEvent(event);
+        }
+        return false;
     }
 
     /**
