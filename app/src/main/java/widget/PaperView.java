@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package view;
+package widget;
 
 import android.annotation.TargetApi;
 import android.content.Context;

@@ -22,7 +22,7 @@ import android.view.ViewGroup;
 
 import adapter.HorizontalScrollViewAdapter;
 import com.lumeng.paper.R;
-import com.lumeng.paper.ReboundHorizontalScrollView;
+import widget.ReboundHorizontalScrollView;
 
 import vu.Vu;
 

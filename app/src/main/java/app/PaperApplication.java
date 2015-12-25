@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.lumeng.paper;
+package app;
 
 import android.app.Application;
 import android.content.Context;

@@ -20,6 +20,8 @@ import android.util.SparseArray;
 import android.view.View;
 
 /**
+ * This Class is Useless now.
+ *
  * @author L.M
  * @since 1.0.0
  */
