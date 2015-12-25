@@ -33,7 +33,7 @@
                 android:orientation="horizontal"
                 android:paddingLeft="2dp"/>
 
-        </view.ReboundHorizontalScrollView>
+        </widget.ReboundHorizontalScrollView>
 
     </widget.PaperView>
 
