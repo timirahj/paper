@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package com.lumeng.paper;
+package view;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -31,6 +30,7 @@ import com.facebook.rebound.Spring;
 import com.facebook.rebound.SpringConfig;
 import com.facebook.rebound.SpringSystem;
 import com.facebook.rebound.SpringUtil;
+import com.lumeng.paper.ScreenUtil;
 
 /**
  * @author lumeng on 15/12/18.
@@ -152,6 +152,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        // TODO: 15/12/25 This is the code ready to judge direction
 //        int flag = 0, count = 0;
 //        float posX = 0, posY = 0, curPosX = 0, curPosY = 0;
 //
@@ -183,13 +184,39 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 //                this.onTouch(layer, event);
 //            }
 //        }
-
 //        layer.onTouchEvent(event);
 
         // TODO: 15/12/22 add scroll tend judgement
+
+//        if (isViewUnder(layer, (int) event.getX(), (int) event.getY())) {
+//            layer.onTouchEvent(event);
+//            this.onTouch(layer, event);
+//            return true;
+//        } else {
+//            super.dispatchTouchEvent(event);
+//            return false;
+//        }
         layer.onTouchEvent(event);
         this.onTouch(layer, event);
         return true;
+    }
+
+    /**
+     * Determine if the supplied view is under the given point in the parent view's
+     * coordinate system
+     * @param view Child view of the paren to hit test
+     * @param x X position to test in the parent's coordinate system
+     * @param y Y position to test in the parent's coordinate system
+     * @return true if the supplied view is under the given point, false otherwise
+     */
+    private boolean isViewUnder(View view , int x, int y) {
+        if (view == null) {
+            return false;
+        }
+        return x >= view.getLeft() &&
+                x < view.getRight() &&
+                y >= view.getTop() &&
+                y < view.getBottom();
     }
 
     private class gestursListener implements GestureDetector.OnGestureListener {

@@ -14,22 +14,11 @@
  * limitations under the License.
  */
 
-package com.lumeng.paper;
+package vu;
 
-import adapter.HorizontalScrollViewAdapter;
-import presenter.BasePresenterActivity;
-import vu.impl.MainVu;
-
-public class MainActivity extends BasePresenterActivity<MainVu> {
-
-    @Override
-    protected Class<MainVu> getVuClass() {
-        return MainVu.class;
-    }
-
-    @Override
-    protected void onBindVu() {
-        HorizontalScrollViewAdapter adapter = new HorizontalScrollViewAdapter();
-        vu.setHorizontalAdapter(adapter);
-    }
+/**
+ * @author lumeng on 15/12/25.
+ */
+public interface VuCallback<T> {
+    void execute(T result);
 }

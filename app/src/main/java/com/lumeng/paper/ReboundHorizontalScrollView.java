@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 import java.util.HashMap;
 import java.util.Map;
 
+import adapter.HorizontalScrollViewAdapter;
+
 public class ReboundHorizontalScrollView extends HorizontalScrollView implements OnClickListener {
 
     /**

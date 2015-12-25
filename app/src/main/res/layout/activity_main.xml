@@ -13,7 +13,7 @@
         android:scaleType="centerCrop"
         android:src="@mipmap/landscape"/>
 
-    <com.lumeng.paper.PaperView
+    <view.PaperView
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
@@ -35,10 +35,10 @@
 
         </com.lumeng.paper.ReboundHorizontalScrollView>
 
-    </com.lumeng.paper.PaperView>
+    </view.PaperView>
 
 
-    <!--<com.lumeng.paper.PaperView-->
+    <!--<view.PaperView-->
     <!--android:layout_width="match_parent"-->
     <!--android:layout_height="match_parent">-->
 
@@ -49,5 +49,5 @@
     <!--android:layout_gravity="bottom"-->
     <!--android:src="@mipmap/bottom"/>-->
 
-    <!--</com.lumeng.paper.PaperView>-->
+    <!--</view.PaperView>-->
 </FrameLayout>
