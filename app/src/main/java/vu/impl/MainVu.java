@@ -16,6 +16,7 @@
 
 package vu.impl;
 
+import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -47,5 +48,9 @@ public class MainVu implements Vu {
 
     public void setHorizontalAdapter(HorizontalScrollViewAdapter adapter) {
         scrollView.initDatas(adapter);
+    }
+
+    public void setViewPagerAdapter(PagerAdapter adapter) {
+
     }
 }

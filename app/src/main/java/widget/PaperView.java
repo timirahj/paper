@@ -156,6 +156,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        // TODO: 15/12/25 check touch area
         Log.d("PaperView", "dispatchTouch");
         final int action = event.getAction();
         final float x = event.getX();
