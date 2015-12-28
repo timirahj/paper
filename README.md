@@ -8,7 +8,7 @@ Now i'm still developing, lol....
 
 **PreView**:
 
-![preview](http://7xphy5.com1.z0.glb.clouddn.com/B91227B7-4E9B-4301-A622-44D07F1DEFFD.png)
+<img src="http://7xphy5.com1.z0.glb.clouddn.com/B91227B7-4E9B-4301-A622-44D07F1DEFFD.png" width="50%" height="50%"/>
 
 **Now**:
 
