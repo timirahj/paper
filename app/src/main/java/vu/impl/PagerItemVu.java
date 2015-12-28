@@ -14,15 +14,41 @@
  * limitations under the License.
  */
 
-package vu;
+package vu.impl;
 
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
+
+import com.lumeng.paper.R;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
+import vu.Vu;
 
 /**
  * @author lumeng on 15/12/28.
  */
-public interface PagerVu {
-    void init(LayoutInflater inflater, ViewGroup container);
-    ViewGroup getView();
+public class PagerItemVu implements Vu {
+
+    View view;
+
+    @Bind(R.id.backbg)
+    ImageView backbg;
+
+    @Override
+    public void init(LayoutInflater inflater, ViewGroup container) {
+        view = inflater.inflate(R.layout.item_viewpager, container, false);
+        ButterKnife.bind(this, view);
+    }
+
+    @Override
+    public View getView() {
+        return view;
+    }
+
+    public void setResId(int resId) {
+        backbg.setImageResource(resId);
+    }
 }
