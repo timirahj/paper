@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package adapter;
+package presenter.impl;
 
 import com.lumeng.paper.R;
 

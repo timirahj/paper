@@ -4,7 +4,6 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -15,7 +14,7 @@ import android.widget.LinearLayout;
 import java.util.HashMap;
 import java.util.Map;
 
-import adapter.HorizontalScrollViewAdapter;
+import presenter.impl.HorizontalScrollViewAdapter;
 
 public class ReboundHorizontalScrollView extends HorizontalScrollView implements OnClickListener {
 

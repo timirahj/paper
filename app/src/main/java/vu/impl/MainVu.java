@@ -22,7 +22,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import adapter.HorizontalScrollViewAdapter;
+import presenter.impl.HorizontalScrollViewAdapter;
 import com.lumeng.paper.R;
 
 import butterknife.Bind;

@@ -16,8 +16,8 @@
 
 package com.lumeng.paper;
 
-import adapter.HorizontalScrollViewAdapter;
-import adapter.ViewPagerAdapter;
+import presenter.impl.HorizontalScrollViewAdapter;
+import presenter.impl.ViewPagerAdapter;
 import presenter.BasePresenterActivity;
 import vu.impl.MainVu;
 
