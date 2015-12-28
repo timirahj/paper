@@ -21,46 +21,32 @@ import android.support.v4.view.PagerAdapter;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 
-import com.lumeng.paper.R;
-
-import java.util.ArrayList;
-import java.util.List;
+import vu.Vu;
 
 /**
  * @author lumeng on 15/12/28.
  */
-public class BasePagerAdapter extends PagerAdapter {
+public abstract class BaseViewPagerAdapter<V extends Vu> extends PagerAdapter {
 
-    private Context context;
-    private LayoutInflater layoutInflater;
-
-    static final List<Integer> PAGES = new ArrayList<Integer>();
-
-    // TODO: 15/12/28 add photo
-    static {
-        PAGES.add(R.mipmap.bg_one);
-        PAGES.add(R.mipmap.bg_two);
-        PAGES.add(R.mipmap.bg_three);
-    }
-
-    public BasePagerAdapter(Context context) {
-        super();
-        this.context = context;
-        layoutInflater = LayoutInflater.from(context);
-    }
+    protected V vu;
 
     @Override
     public Object instantiateItem(ViewGroup container, int position) {
-        View view = layoutInflater.inflate(R.layout.item_viewpager, container, false);
-        final int resId = PAGES.get(position);
+        LayoutInflater inflater = (LayoutInflater) container.getContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        try {
+            vu = (V) getVuClass().newInstance();
+            vu.init(inflater, container);
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        }
 
-        ImageView pager = (ImageView) view.findViewById(R.id.backbg);
-        pager.setImageResource(resId);
+        onBindItemVu(position);
 
-        container.addView(view);
-        return view;
+        container.addView(vu.getView());
+        return vu.getView();
     }
 
     @Override
@@ -69,12 +55,11 @@ public class BasePagerAdapter extends PagerAdapter {
     }
 
     @Override
-    public int getCount() {
-        return PAGES.size();
-    }
-
-    @Override
     public boolean isViewFromObject(View view, Object object) {
         return view == object;
     }
+
+    protected abstract Class<V> getVuClass();
+
+    protected abstract void onBindItemVu(int position);
 }
