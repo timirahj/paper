@@ -23,6 +23,8 @@ import android.widget.ImageView;
 
 import com.lumeng.paper.R;
 
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import vu.Vu;
 
 /**
@@ -31,12 +33,14 @@ import vu.Vu;
 public class ReboundItemVu implements Vu {
 
     View view;
+
+    @Bind(R.id.img_hrozontal)
     ImageView photo;
 
     @Override
     public void init(LayoutInflater inflater, ViewGroup container) {
         view = inflater.inflate(R.layout.item_horizontalscrollview, container, false);
-        photo = (ImageView) view.findViewById(R.id.img_hrozontal);
+        ButterKnife.bind(this, view);
     }
 
     @Override

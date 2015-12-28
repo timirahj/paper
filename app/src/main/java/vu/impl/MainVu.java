@@ -17,12 +17,16 @@
 package vu.impl;
 
 import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
 import adapter.HorizontalScrollViewAdapter;
 import com.lumeng.paper.R;
+
+import butterknife.Bind;
+import butterknife.ButterKnife;
 import widget.ReboundHorizontalScrollView;
 
 import vu.Vu;
@@ -33,12 +37,16 @@ import vu.Vu;
 public class MainVu implements Vu {
 
     View view;
+    @Bind(R.id.hrozontalscrollview)
     ReboundHorizontalScrollView scrollView;
+
+    @Bind(R.id.viewPager)
+    ViewPager viewPager;
 
     @Override
     public void init(LayoutInflater inflater, ViewGroup container) {
         view = inflater.inflate(R.layout.activity_main, container, false);
-        scrollView = (ReboundHorizontalScrollView) view.findViewById(R.id.hrozontalscrollview);
+        ButterKnife.bind(this, view);
     }
 
     @Override
@@ -51,6 +59,6 @@ public class MainVu implements Vu {
     }
 
     public void setViewPagerAdapter(PagerAdapter adapter) {
-
+        viewPager.setAdapter(adapter);
     }
 }

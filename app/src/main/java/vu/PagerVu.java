@@ -14,25 +14,15 @@
  * limitations under the License.
  */
 
-package com.lumeng.paper;
+package vu;
 
-import adapter.HorizontalScrollViewAdapter;
-import presenter.BasePagerAdapter;
-import presenter.BasePresenterActivity;
-import vu.impl.MainVu;
+import android.view.LayoutInflater;
+import android.view.ViewGroup;
 
-public class MainActivity extends BasePresenterActivity<MainVu> {
-
-    @Override
-    protected Class<MainVu> getVuClass() {
-        return MainVu.class;
-    }
-
-    @Override
-    protected void onBindVu() {
-        HorizontalScrollViewAdapter adapter = new HorizontalScrollViewAdapter();
-        vu.setHorizontalAdapter(adapter);
-
-        vu.setViewPagerAdapter(new BasePagerAdapter(this));
-    }
+/**
+ * @author lumeng on 15/12/28.
+ */
+public interface PagerVu {
+    void init(LayoutInflater inflater, ViewGroup container);
+    ViewGroup getView();
 }

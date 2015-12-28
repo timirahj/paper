@@ -64,6 +64,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     private final SpringSystem springSystem;
     private final Spring popAnimation;
     private View layer;
+    private View viewPager;
 
     private GestureDetector gestureDetector;
 
@@ -100,7 +101,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
-        layer = getChildAt(0);
+        viewPager = getChildAt(0);
+        layer = getChildAt(1);
         int contentHeight = layer.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
         translateDistance = (double) (screen[1] - layer.getHeight()) / 2;
@@ -157,41 +159,50 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
         // TODO: 15/12/25 check touch area
-        Log.d("PaperView", "dispatchTouch");
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
         int flag = 0;
-        switch (action) {
-            case MotionEvent.ACTION_DOWN:
-                Log.d("PaperView", "down");
-                mLastMotionX = x;
-                mLastMotionY = y;
-            case MotionEvent.ACTION_MOVE:
-                Log.d("PaperView", "move");
-                final int deltaX = (int) (mLastMotionX - x);
-                final int deltaY = (int) (mLastMotionY - y);
-                boolean xMoved = Math.abs(deltaX) > Math.abs(deltaY);
-                Log.d("PaperView", "xMoved:" + xMoved);
+        if (isViewUnder(layer, (int) event.getX(), (int) event.getY())) {
+            switch (action) {
+                case MotionEvent.ACTION_DOWN:
+                    mLastMotionX = x;
+                    mLastMotionY = y;
+                case MotionEvent.ACTION_MOVE:
+                    final int deltaX = (int) (mLastMotionX - x);
+                    final int deltaY = (int) (mLastMotionY - y);
+                    boolean xMoved = Math.abs(deltaX) > Math.abs(deltaY);
 
-                if (xMoved) {
-                    layer.onTouchEvent(event);
-                    flag = 1;
-                } else {
-                    this.onTouch(layer, event);
-                    layer.onTouchEvent(event);
-                    flag = 2;
-                    return true;
-                }
-                break;
+                    if (xMoved) {
+                        layer.onTouchEvent(event);
+                        flag = 1;
+                    } else {
+                        this.onTouch(layer, event);
+                        layer.onTouchEvent(event);
+                        flag = 2;
+                        return true;
+                    }
+                    break;
+            }
+        }
+
+        if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
+            viewPager.onTouchEvent(event);
+            flag = 3;
+            return true;
         }
 
         if (flag == 1) {
             layer.onTouchEvent(event);
+        } else if (flag == 3){
+            viewPager.onTouchEvent(event);
         } else {
             this.onTouch(layer, event);
             layer.onTouchEvent(event);
         }
+
+        Log.d("PaperView", "flag:" + flag);
+
         return false;
     }
 

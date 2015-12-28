@@ -4,6 +4,7 @@ import android.content.Context;
 import android.graphics.Color;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -152,7 +153,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             //回调
             if (mListener != null) {
                 notifyCurrentImgChanged();
-
             }
         }
     }
@@ -191,9 +191,9 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             view.measure(w, h);
             mChildHeight = view.getMeasuredHeight();
             mChildWidth = view.getMeasuredWidth();
-            mChildHeight = view.getMeasuredHeight();
+//            mChildHeight = view.getMeasuredHeight();
             // 计算每次加载多少个View
-            mCountOneScreen = mScreenWitdh / mChildWidth + 2;
+            mCountOneScreen = mScreenWitdh / mChildWidth + 1;
 
         }
         //初始化第一屏幕的元素
