@@ -41,13 +41,22 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     private static final int SCROLL_MAX_DISTANCE = 400;
 
-    private Status status = new Status();
+    public static boolean canDeal = false;
+    /**
+     * This is a label for mark weather it should execute switch method or not.
+     */
+    private boolean isHandle = false;
+
+    public static Status status = new Status();
 
     /**
      * Save Screen parameters int Array
      */
     private int[] screen;
-
+    /**
+     *
+     */
+    private int FLAG = 0;
     /**
      * Value of magnification(放大率).
      */
@@ -158,47 +167,58 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        // TODO: 15/12/29 fix error
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
-        int flag = 0;
-        if (isViewUnder(layer, (int) x, (int) y)) {
+        if (isHandle) {
+            if (!canDeal) {
+                if (FLAG == 1) {
+                    layer.onTouchEvent(event);
+                    return false;
+                } else {
+                    this.onTouch(layer, event);
+                    layer.onTouchEvent(event);
+                    return true;
+                }
+            } else {
+                viewPager.onTouchEvent(event);
+                return true;
+            }
+        } else {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     mLastMotionX = x;
                     mLastMotionY = y;
+                    if (isViewUnder(viewPager, (int) x, (int) y)) {
+                        canDeal = true;
+                    } else {
+                        canDeal = false;
+                    }
                 case MotionEvent.ACTION_MOVE:
                     final int deltaX = (int) (mLastMotionX - x);
                     final int deltaY = (int) (mLastMotionY - y);
-                    boolean xMoved = Math.abs(deltaX) > Math.abs(deltaY);
-                    if (xMoved) {
-                        layer.onTouchEvent(event);
-                        flag = 1;
+                    boolean xMove = Math.abs(deltaX) > Math.abs(deltaY);
+                    if (xMove) {
+                        FLAG = 1;
                     } else {
-                        this.onTouch(layer, event);
-                        layer.onTouchEvent(event);
-                        flag = 2;
+                        FLAG = 2;
                     }
-                    break;
+                    isHandle = true;
+                    if (!canDeal) {
+                        if (FLAG == 1) {
+                            layer.onTouchEvent(event);
+                            return false;
+                        } else {
+                            this.onTouch(layer, event);
+                            layer.onTouchEvent(event);
+                            return true;
+                        }
+                    } else {
+                        viewPager.onTouchEvent(event);
+                        return true;
+                    }
             }
-        } else {
-            flag = 3;
         }
-
-        Log.d("PaperView", "flag:" + flag);
-
-        if (flag == 1) {
-            layer.onTouchEvent(event);
-        } else if (flag == 3) {
-            viewPager.onTouchEvent(event);
-            return true;
-        } else {
-            this.onTouch(layer, event);
-            layer.onTouchEvent(event);
-            return true;
-        }
-
         return false;
     }
 
@@ -303,6 +323,9 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
             layer.onTouchEvent(event);
+            FLAG = 0;
+            isHandle = false;
+            canDeal = false;
             return this.onTouchEvent(event);
         } else {
             return gestureDetector.onTouchEvent(event);

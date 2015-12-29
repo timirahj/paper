@@ -12,7 +12,7 @@ Now i'm still developing, lol....
 
 **Now**:
 
-![Now](http://7xphy5.com1.z0.glb.clouddn.com/Telecine_2015-12-25-13-50-39.gif)
+![Now](http://7xphy5.com1.z0.glb.clouddn.com/Telecine_2015-12-29-14-13-59.gif)
 
 ### License
 ```

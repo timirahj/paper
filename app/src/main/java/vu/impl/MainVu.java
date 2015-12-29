@@ -28,6 +28,7 @@ import com.lumeng.paper.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import widget.PaperViewPager;
 import widget.ReboundHorizontalScrollView;
 
 import vu.Vu;
@@ -42,7 +43,7 @@ public class MainVu implements Vu {
     ReboundHorizontalScrollView scrollView;
 
     @Bind(R.id.viewPager)
-    ViewPager viewPager;
+    PaperViewPager viewPager;
 
     @Override
     public void init(LayoutInflater inflater, ViewGroup container) {
