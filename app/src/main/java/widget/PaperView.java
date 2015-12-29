@@ -170,6 +170,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
+        Log.d("PaperView", "canDeal:" + canDeal);
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
