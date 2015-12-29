@@ -158,12 +158,12 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
-        // TODO: 15/12/25 check touch area
+        // TODO: 15/12/29 fix error
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
         int flag = 0;
-        if (isViewUnder(layer, (int) event.getX(), (int) event.getY())) {
+        if (isViewUnder(layer, (int) x, (int) y)) {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
                     mLastMotionX = x;
@@ -172,7 +172,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     final int deltaX = (int) (mLastMotionX - x);
                     final int deltaY = (int) (mLastMotionY - y);
                     boolean xMoved = Math.abs(deltaX) > Math.abs(deltaY);
-
                     if (xMoved) {
                         layer.onTouchEvent(event);
                         flag = 1;
@@ -180,28 +179,25 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                         this.onTouch(layer, event);
                         layer.onTouchEvent(event);
                         flag = 2;
-                        return true;
                     }
                     break;
             }
-        }
-
-        if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
-            viewPager.onTouchEvent(event);
-            flag = 3;
-            return true;
-        }
-
-        if (flag == 1) {
-            layer.onTouchEvent(event);
-        } else if (flag == 3){
-            viewPager.onTouchEvent(event);
         } else {
-            this.onTouch(layer, event);
-            layer.onTouchEvent(event);
+            flag = 3;
         }
 
         Log.d("PaperView", "flag:" + flag);
+
+        if (flag == 1) {
+            layer.onTouchEvent(event);
+        } else if (flag == 3) {
+            viewPager.onTouchEvent(event);
+            return true;
+        } else {
+            this.onTouch(layer, event);
+            layer.onTouchEvent(event);
+            return true;
+        }
 
         return false;
     }
@@ -209,12 +205,13 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     /**
      * Determine if the supplied view is under the given point in the parent view's
      * coordinate system
+     *
      * @param view Child view of the paren to hit test
-     * @param x X position to test in the parent's coordinate system
-     * @param y Y position to test in the parent's coordinate system
+     * @param x    X position to test in the parent's coordinate system
+     * @param y    Y position to test in the parent's coordinate system
      * @return true if the supplied view is under the given point, false otherwise
      */
-    private boolean isViewUnder(View view , int x, int y) {
+    private boolean isViewUnder(View view, int x, int y) {
         if (view == null) {
             return false;
         }
@@ -277,7 +274,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     layer.setScaleX(scaleValue);
                     layer.setScaleY(scaleValue);
 
-                    // TODO: 15/12/21 figure out why it doesn't need translate when it getting smaller
                     popAnimation.setCurrentValue(scaleValue);
 
                     status.preMode = Status.STATUS_CHANGE_SMALL;
@@ -306,6 +302,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
+            layer.onTouchEvent(event);
             return this.onTouchEvent(event);
         } else {
             return gestureDetector.onTouchEvent(event);

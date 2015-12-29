@@ -7,10 +7,12 @@ import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.HorizontalScrollView;
 import android.widget.LinearLayout;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -32,6 +34,10 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         void onClick(View view, int pos);
     }
 
+    public ArrayList<Integer> pointList = new ArrayList<Integer>();
+
+    private ViewGroup firstChild = null;
+
     private CurrentImageChangeListener mListener;
 
     private OnItemClickListener mOnClickListener;
@@ -41,6 +47,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     private LinearLayout mContainer;
 
+    private int currentPage = 0;
+    private int subChildCount = 0;
     /**
      * 子元素的宽度
      */
@@ -56,7 +64,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
     /**
      * 当前第一张图片的下标
      */
-    private int mFristIndex;
+    private int mFirstIndex;
     /**
      * 当前第一个View
      */
@@ -93,6 +101,22 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
     protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
         mContainer = (LinearLayout) getChildAt(0);
+        receiveChildInfo();
+    }
+
+    private void receiveChildInfo() {
+        if (getChildCount() != 0) {
+            firstChild = (ViewGroup) getChildAt(0);
+        }
+
+        if (firstChild != null) {
+            subChildCount = firstChild.getChildCount();
+            for (int i = 0; i < subChildCount; i++) {
+                if (((View) firstChild.getChildAt(i)).getWidth() > 0) {
+                    pointList.add(((View) firstChild.getChildAt(i)).getLeft());
+                }
+            }
+        }
     }
 
     /**
@@ -115,7 +139,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         mViewPos.put(view, mCurrentIndex);
 
         //当前第一张图片小标
-        mFristIndex++;
+        mFirstIndex++;
         //如果设置了滚动监听则触发
         if (mListener != null) {
             notifyCurrentImgChanged();
@@ -128,7 +152,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     protected void loadPreImg() {
         //如果当前已经是第一张，则返回
-        if (mFristIndex == 0)
+        if (mFirstIndex == 0)
             return;
         //获得当前应该显示为第一张图片的下标
         int index = mCurrentIndex - mCountOneScreen;
@@ -148,7 +172,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             scrollTo(mChildWidth, 0);
             //当前位置--，当前第一个显示的下标--
             mCurrentIndex--;
-            mFristIndex--;
+            mFirstIndex--;
             //回调
             if (mListener != null) {
                 notifyCurrentImgChanged();
@@ -165,7 +189,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             mContainer.getChildAt(i).setBackgroundColor(Color.WHITE);
         }
 
-        mListener.onCurrentImgChanged(mFristIndex, mContainer.getChildAt(0));
+        mListener.onCurrentImgChanged(mFirstIndex, mContainer.getChildAt(0));
 
     }
 
@@ -183,10 +207,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
 
         // 强制计算当前View的宽和高
         if (mChildWidth == 0 && mChildHeight == 0) {
-            int w = View.MeasureSpec.makeMeasureSpec(0,
-                    View.MeasureSpec.UNSPECIFIED);
-            int h = View.MeasureSpec.makeMeasureSpec(0,
-                    View.MeasureSpec.UNSPECIFIED);
+            int w = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
+            int h = View.MeasureSpec.makeMeasureSpec(0, View.MeasureSpec.UNSPECIFIED);
             view.measure(w, h);
             mChildHeight = view.getMeasuredHeight();
             mChildWidth = view.getMeasuredWidth();
@@ -237,8 +259,16 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
                     loadPreImg();
                 }
                 break;
+//            case MotionEvent.ACTION_UP:
+//                receiveChildInfo();
+//                smoothScrollToCurrent();
         }
         return super.onTouchEvent(ev);
+    }
+
+    public void smoothScrollToCurrent() {
+        int currentIndex = mFirstIndex + 1;
+        mContainer.getChildAt(currentIndex).getLeft();
     }
 
     @Override

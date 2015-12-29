@@ -32,7 +32,6 @@ public class MainActivity extends BasePresenterActivity<MainVu> {
     protected void onBindVu() {
         HorizontalScrollViewAdapter adapter = new HorizontalScrollViewAdapter();
         vu.setHorizontalAdapter(adapter);
-
         vu.setViewPagerAdapter(new ViewPagerAdapter());
     }
 }

@@ -17,10 +17,8 @@
 package app;
 
 import android.app.Application;
-import android.content.Context;
 
-import com.squareup.leakcanary.LeakCanary;
-import com.squareup.leakcanary.RefWatcher;
+import com.zhy.autolayout.config.AutoLayoutConifg;
 
 /**
  * @author lumeng on 15/12/22.
@@ -28,18 +26,10 @@ import com.squareup.leakcanary.RefWatcher;
  */
 public class PaperApplication extends Application {
 
-    public static RefWatcher getRefWatcher(Context context) {
-        PaperApplication application = (PaperApplication) context.getApplicationContext();
-        return application.refWatcher;
-    }
-
-    private RefWatcher refWatcher;
-
     @Override
     public void onCreate() {
         super.onCreate();
-        refWatcher = LeakCanary.install(this);
-//        LeakCanary.install(this);
+        AutoLayoutConifg.getInstance().useDeviceSize();
     }
 
 }
