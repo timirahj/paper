@@ -16,9 +16,9 @@ Now i'm still developing, lol....
 
 **Function**
 
-[x] Add basic function of ReboundHorizontalScrollView and ViewPager.
-[ ] Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
-[ ] Add function of exchange ReboundHorizontalScrollView when ViewPager is changed.
+- Add basic function of ReboundHorizontalScrollView and ViewPager.
+- Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
+- Add function of exchange ReboundHorizontalScrollView when ViewPager is changed.
 
 ### License
 ```
