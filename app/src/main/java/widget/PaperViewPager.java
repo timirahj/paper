@@ -38,6 +38,7 @@ public class PaperViewPager extends ViewPager {
     public boolean onTouchEvent(MotionEvent ev) {
         if (ev.getAction() == MotionEvent.ACTION_UP) {
             PaperView.canDeal = false;
+            PaperView.isHandle = false;
         }
         if (isViewUnder(this, (int) ev.getX(), (int) ev.getY())) {
             return super.onTouchEvent(ev);

@@ -45,7 +45,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     /**
      * This is a label for mark weather it should execute switch method or not.
      */
-    private boolean isHandle = false;
+    public static boolean isHandle = false;
 
     public static Status status = new Status();
 
@@ -170,7 +170,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
-        Log.d("PaperView", "canDeal:" + canDeal);
+        Log.d("PaperView", "isHandle:" + isHandle);
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
@@ -190,7 +190,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 case MotionEvent.ACTION_DOWN:
                     mLastMotionX = x;
                     mLastMotionY = y;
-                    if (isViewUnder(viewPager, (int) x, (int) y)) {
+                    if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
                         canDeal = true;
                     } else {
                         canDeal = false;
