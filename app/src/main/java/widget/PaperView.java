@@ -167,10 +167,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     @Override
     public boolean dispatchTouchEvent(MotionEvent event) {
+        // TODO: 15/12/30 1. add judgement when ReboundHorizontalScrollView is fullscreen
+        // TODO: 15/12/30 2. Now when scroll direction is horizontal, the function lock scroll direction is not worked
         final int action = event.getAction();
         final float x = event.getX();
         final float y = event.getY();
-        Log.d("PaperView", "isHandle:" + isHandle);
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {

@@ -82,7 +82,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     private int mScreenWitdh;
 
-
     /**
      * 保存View与位置的键值对
      */
@@ -144,7 +143,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
-
     }
 
     /**
@@ -188,9 +186,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         for (int i = 0; i < mContainer.getChildCount(); i++) {
             mContainer.getChildAt(i).setBackgroundColor(Color.WHITE);
         }
-
         mListener.onCurrentImgChanged(mFirstIndex, mContainer.getChildAt(0));
-
     }
 
     /**
