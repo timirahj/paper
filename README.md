@@ -14,7 +14,7 @@ Now i'm still developing, lol....
 
 ![Now](http://7xphy5.com1.z0.glb.clouddn.com/Telecine_2015-12-29-14-13-59.gif)
 
-**TASK**
+### Task
 
 - Add basic function of ReboundHorizontalScrollView and ViewPager.
 - Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
