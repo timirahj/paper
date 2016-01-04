@@ -12,13 +12,13 @@ Now i'm still developing, lol....
 
 **Now**:
 
-![Now](http://7xphy5.com1.z0.glb.clouddn.com/Telecine_2015-12-29-14-13-59.gif)
+![Now](http://7xphy5.com1.z0.glb.clouddn.com/Telecine_2016-01-04-15-07-07.gif)
 
-### Task
+### To-Do List
 
-- Add basic function of ReboundHorizontalScrollView and ViewPager.
-- Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
-- Add function of exchange ReboundHorizontalScrollView when ViewPager is changed.
+- [x] Add basic function of ReboundHorizontalScrollView and ViewPager.
+- [x] Add function of exchange ReboundHorizontalScrollView when ViewPager is changed.
+- [ ] Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
 
 ### License
 ```
