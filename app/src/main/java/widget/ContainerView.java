@@ -16,15 +16,16 @@
 
 package widget;
 
-import android.annotation.TargetApi;
+import android.animation.Animator;
 import android.content.Context;
-import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 
 import presenter.impl.HorizontalScrollViewAdapter;
@@ -32,9 +33,13 @@ import presenter.impl.HorizontalScrollViewAdapter;
 /**
  * @author lumeng on 16/1/4.
  */
-public class ContainerView extends LinearLayout {
+public class ContainerView extends FrameLayout {
+
+    public static final int PREVIEW = 0;
+    public static final int AFTERVIEW = 1;
 
     private Context context;
+
     private AttributeSet attributeSet;
 
     private int r;
@@ -67,7 +72,7 @@ public class ContainerView extends LinearLayout {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        LinearLayout.LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, linearParams);
@@ -77,33 +82,55 @@ public class ContainerView extends LinearLayout {
         addView(scrollView, scrollParams);
     }
 
-    public void addAfter() {
+    /**
+     * Add a new {@link ReboundHorizontalScrollView}
+     */
+    public void addRebound(int status) {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        LinearLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, layoutParams);
         scrollView.initDatas(new HorizontalScrollViewAdapter());
-        scrollView.layout(r, getChildAt(0).getTop(), r * 2, b);
+        scrollView.setHorizontalScrollBarEnabled(false);
 
         addView(scrollView, scrollParams);
 
-        translationLeft();
+        if (status == AFTERVIEW) {
+            scrollView.layout(r, getChildAt(0).getTop(), r * 2, b);
+        } else if (status == PREVIEW) {
+            scrollView.layout(-r, getChildAt(0).getTop(), 0, b);
+        }
+
+        translate(status);
     }
 
-    @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
-    private void translationLeft() {
+    /**
+     * Do translate animation
+     * @param direction which direction that should animate to
+     */
+    private void translate(int direction) {
         if (getChildCount() == 2) {
             View scroll = getChildAt(0);
-            View line = getChildAt(1);
+            View newScroll = getChildAt(1);
 
             scroll.setTranslationX(scroll.getX());
-            line.setTranslationX(line.getX());
+            newScroll.setTranslationX(newScroll.getX());
 
-            scroll.animate().translationX(-r).setDuration(500).setInterpolator(INTERPOLATOR);
-            line.animate().translationX(0).setDuration(500).setInterpolator(INTERPOLATOR).start();
+            if (direction == AFTERVIEW) {
+                scroll.animate().translationX(-r).setStartDelay(300).setDuration(500).setInterpolator(INTERPOLATOR);
+            }
+            if (direction == PREVIEW) {
+                scroll.animate().translationX(r).setStartDelay(300).setDuration(500).setInterpolator(INTERPOLATOR);
+            }
+
+            newScroll.animate().translationX(0).setStartDelay(300).setDuration(500).setInterpolator(INTERPOLATOR).setListener(new animationListener()).start();
+        }
+
+        if (getChildCount() > 2) {
+            removeViewAt(0);
         }
     }
 
@@ -127,6 +154,31 @@ public class ContainerView extends LinearLayout {
     @Override
     public boolean onInterceptTouchEvent(MotionEvent ev) {
         return false;
+    }
+
+    private class animationListener implements Animator.AnimatorListener {
+        @Override
+        public void onAnimationStart(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationEnd(Animator animation) {
+            if (getChildCount() >= 2) {
+                removeViewAt(0);
+                notifySubtreeAccessibilityStateChanged(getChildAt(0), ContainerView.this, 1);
+            }
+        }
+
+        @Override
+        public void onAnimationCancel(Animator animation) {
+
+        }
+
+        @Override
+        public void onAnimationRepeat(Animator animation) {
+
+        }
     }
 
 }

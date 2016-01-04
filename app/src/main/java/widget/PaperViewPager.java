@@ -90,6 +90,7 @@ public class PaperViewPager extends ViewPager {
                     right = left = false;
                 }
             }
+            lastValue = positionOffsetPixels;
         }
 
         @Override

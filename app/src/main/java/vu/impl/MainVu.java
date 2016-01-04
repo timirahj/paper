@@ -61,13 +61,16 @@ public class MainVu implements Vu, PaperViewPager.ViewChangeCallback {
 
     @Override
     public void changeView(boolean left, boolean right) {
+        if (left) {
+            containerView.addRebound(ContainerView.AFTERVIEW);
+        }
 
+        if (right) {
+            containerView.addRebound(ContainerView.PREVIEW);
+        }
     }
 
     @Override
     public void getCurrentPageIndex(int index) {
-        if (index == 1) {
-            containerView.addAfter();
-        }
     }
 }
