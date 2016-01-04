@@ -16,9 +16,8 @@
 
 package com.lumeng.paper;
 
-import presenter.impl.HorizontalScrollViewAdapter;
-import presenter.impl.ViewPagerAdapter;
 import presenter.BasePresenterActivity;
+import presenter.impl.ViewPagerAdapter;
 import vu.impl.MainVu;
 
 public class MainActivity extends BasePresenterActivity<MainVu> {
@@ -30,8 +29,6 @@ public class MainActivity extends BasePresenterActivity<MainVu> {
 
     @Override
     protected void onBindVu() {
-        HorizontalScrollViewAdapter adapter = new HorizontalScrollViewAdapter();
-        vu.setHorizontalAdapter(adapter);
         vu.setViewPagerAdapter(new ViewPagerAdapter());
     }
 }

@@ -17,38 +17,37 @@
 package vu.impl;
 
 import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import presenter.impl.HorizontalScrollViewAdapter;
 import com.lumeng.paper.R;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
-import widget.PaperViewPager;
-import widget.ReboundHorizontalScrollView;
-
 import vu.Vu;
+import widget.ContainerView;
+import widget.PaperViewPager;
 
 /**
  * @author lumeng on 15/12/25.
  */
-public class MainVu implements Vu {
+public class MainVu implements Vu, PaperViewPager.ViewChangeCallback {
 
     View view;
-    @Bind(R.id.hrozontalscrollview)
-    ReboundHorizontalScrollView scrollView;
 
     @Bind(R.id.viewPager)
     PaperViewPager viewPager;
+
+    @Bind(R.id.containerView)
+    ContainerView containerView;
 
     @Override
     public void init(LayoutInflater inflater, ViewGroup container) {
         view = inflater.inflate(R.layout.activity_main, container, false);
         ButterKnife.bind(this, view);
+        viewPager.setChangeViewCallback(this);
     }
 
     @Override
@@ -56,25 +55,22 @@ public class MainVu implements Vu {
         return view;
     }
 
-    public void setHorizontalAdapter(HorizontalScrollViewAdapter adapter) {
-        scrollView.initDatas(adapter);
-    }
-
     public void setViewPagerAdapter(PagerAdapter adapter) {
         viewPager.setAdapter(adapter);
-//        viewPager.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
-//            @Override
-//            public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
-//            }
-//
-//            @Override
-//            public void onPageSelected(int position) {
-//            }
-//
-//            @Override
-//            public void onPageScrollStateChanged(int state) {
-//            }
-//        });
     }
 
+    @Override
+    public void changeView(boolean left, boolean right) {
+        if (left) {
+            containerView.addRebound(ContainerView.AFTERVIEW);
+        }
+
+        if (right) {
+            containerView.addRebound(ContainerView.PREVIEW);
+        }
+    }
+
+    @Override
+    public void getCurrentPageIndex(int index) {
+    }
 }
