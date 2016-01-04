@@ -19,7 +19,6 @@ package widget;
 import android.animation.Animator;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,17 +34,19 @@ import presenter.impl.HorizontalScrollViewAdapter;
  */
 public class ContainerView extends FrameLayout {
 
+    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+
     public static final int PREVIEW = 0;
     public static final int AFTERVIEW = 1;
+
+    private ReboundHorizontalScrollView real;
 
     private Context context;
 
     private AttributeSet attributeSet;
-
     private int r;
-    private int b;
 
-    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+    private int b;
 
     public ContainerView(Context context) {
         this(context, null);
@@ -68,6 +69,9 @@ public class ContainerView extends FrameLayout {
         return super.onTouchEvent(event);
     }
 
+    /**
+     * Init view
+     */
     private void initChild() {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
@@ -80,6 +84,8 @@ public class ContainerView extends FrameLayout {
         scrollView.setHorizontalScrollBarEnabled(false);
 
         addView(scrollView, scrollParams);
+
+        real = (ReboundHorizontalScrollView) getChildAt(0);
     }
 
     /**

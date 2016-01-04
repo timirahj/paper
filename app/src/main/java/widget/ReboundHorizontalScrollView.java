@@ -66,10 +66,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     private int mFirstIndex;
     /**
-     * 当前第一个View
-     */
-    private View mFirstView;
-    /**
      * 数据适配器
      */
     private HorizontalScrollViewAdapter mAdapter;
@@ -103,7 +99,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         receiveChildInfo();
     }
 
-    private void receiveChildInfo() {
+    public void receiveChildInfo() {
         if (getChildCount() != 0) {
             firstChild = (ViewGroup) getChildAt(0);
         }
@@ -208,10 +204,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             view.measure(w, h);
             mChildHeight = view.getMeasuredHeight();
             mChildWidth = view.getMeasuredWidth();
-//            mChildHeight = view.getMeasuredHeight();
             // 计算每次加载多少个View
             mCountOneScreen = mScreenWitdh / mChildWidth + 1;
-
         }
         //初始化第一屏幕的元素
         initFirstScreenChildren(mCountOneScreen);
@@ -238,7 +232,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
-
     }
 
     @Override
@@ -255,16 +248,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
                     loadPreImg();
                 }
                 break;
-//            case MotionEvent.ACTION_UP:
-//                receiveChildInfo();
-//                smoothScrollToCurrent();
         }
         return super.onTouchEvent(ev);
-    }
-
-    public void smoothScrollToCurrent() {
-        int currentIndex = mFirstIndex + 1;
-        mContainer.getChildAt(currentIndex).getLeft();
     }
 
     @Override
