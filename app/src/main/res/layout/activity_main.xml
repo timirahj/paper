@@ -22,38 +22,31 @@
             android:layout_width="match_parent"
             android:layout_height="362dp"/>
 
-        <widget.ReboundHorizontalScrollView
-            android:id="@+id/hrozontalscrollview"
-            android:layout_width="wrap_content"
+        <widget.ContainerView
+            android:id="@+id/containerView"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_marginTop="2dp"
-            android:background="@android:color/transparent"
-            android:scrollbars="none">
+            android:layout_gravity="bottom">
 
-            <LinearLayout
-                android:id="@+id/gallery"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:background="@android:color/transparent"
-                android:orientation="horizontal"
-                android:paddingLeft="1dp"/>
+            <!--<widget.ReboundHorizontalScrollView-->
+                <!--android:id="@+id/hrozontalscrollview"-->
+                <!--android:layout_width="wrap_content"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_marginTop="2dp"-->
+                <!--android:background="@android:color/transparent"-->
+                <!--android:scrollbars="none">-->
 
-        </widget.ReboundHorizontalScrollView>
+                <!--<LinearLayout-->
+                    <!--android:id="@+id/gallery"-->
+                    <!--android:layout_width="wrap_content"-->
+                    <!--android:layout_height="wrap_content"-->
+                    <!--android:background="@android:color/transparent"-->
+                    <!--android:orientation="horizontal"-->
+                    <!--android:paddingLeft="1dp"/>-->
+
+            <!--</widget.ReboundHorizontalScrollView>-->
+        </widget.ContainerView>
 
     </widget.PaperView>
 
-
-    <!--<view.PaperView-->
-    <!--android:layout_width="match_parent"-->
-    <!--android:layout_height="match_parent">-->
-
-    <!--<ImageView-->
-    <!--android:id="@+id/bottom"-->
-    <!--android:layout_width="1230px"-->
-    <!--android:layout_height="650px"-->
-    <!--android:layout_gravity="bottom"-->
-    <!--android:src="@mipmap/bottom"/>-->
-
-    <!--</view.PaperView>-->
 </FrameLayout>

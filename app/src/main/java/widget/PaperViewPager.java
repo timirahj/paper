@@ -26,12 +26,25 @@ import android.view.View;
  * @author lumeng on 15/12/29.
  */
 public class PaperViewPager extends ViewPager {
+
+    private boolean left = false;
+    private boolean right = false;
+    private boolean isScrolling = false;
+    private int lastValue = -1;
+    private ViewChangeCallback callback = null;
+
     public PaperViewPager(Context context) {
         super(context);
+        init();
     }
 
     public PaperViewPager(Context context, AttributeSet attrs) {
         super(context, attrs);
+        init();
+    }
+
+    private void init() {
+        addOnPageChangeListener(listener);
     }
 
     @Override
@@ -47,6 +60,11 @@ public class PaperViewPager extends ViewPager {
         }
     }
 
+    /**
+     * Judge if the click position under viewpager or not
+     * @return true if under
+     *         false otherwise
+     */
     private boolean isViewUnder(View view, int x, int y) {
         if (view == null) {
             return false;
@@ -55,5 +73,55 @@ public class PaperViewPager extends ViewPager {
                 x < view.getRight() &&
                 y >= view.getTop() &&
                 y < view.getBottom();
+    }
+
+    private OnPageChangeListener listener = new OnPageChangeListener() {
+
+        @Override
+        public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {
+            if (isScrolling) {
+                if (lastValue > positionOffsetPixels) {
+                    right = true;
+                    left = false;
+                } else if (lastValue < positionOffsetPixels) {
+                    right = false;
+                    left = true;
+                } else if (lastValue == positionOffsetPixels) {
+                    right = left = false;
+                }
+            }
+        }
+
+        @Override
+        public void onPageSelected(int position) {
+            if (callback != null) {
+                callback.getCurrentPageIndex(position);
+            }
+        }
+
+        @Override
+        public void onPageScrollStateChanged(int state) {
+            if (state == 1) {
+                isScrolling = true;
+            } else {
+                isScrolling = false;
+            }
+
+            if (state == 2) {
+                if (callback != null) {
+                    callback.changeView(left, right);
+                }
+                right = left = false;
+            }
+        }
+    };
+
+    public void setChangeViewCallback(ViewChangeCallback callback) {
+        this.callback = callback;
+    }
+
+    public interface ViewChangeCallback {
+        public void changeView(boolean left, boolean right);
+        public void getCurrentPageIndex(int index);
     }
 }
