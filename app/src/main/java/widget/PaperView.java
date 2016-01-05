@@ -20,6 +20,7 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -39,6 +40,8 @@ import com.lumeng.paper.ScreenUtil;
 public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     private static final int SCROLL_MAX_DISTANCE = 400;
+    private static final int TOUCH_STATE_REST = 0;
+    private static final int TOUCH_STATE_SCROLLING = 1;
 
     public static boolean canDeal = false;
     /**
@@ -56,6 +59,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      *
      */
     private int FLAG = 0;
+
     /**
      * Value of magnification(放大率).
      */
@@ -76,8 +80,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     private GestureDetector gestureDetector;
 
-    private float mLastMotionX;//滑动过程中，x方向的初始坐标
-    private float mLastMotionY;//滑动过程中，y方向的初始坐标
+    private float mLastMotionX;
+    private float mLastMotionY;
 
     public PaperView(Context context) {
         this(context, null);
@@ -149,7 +153,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (status.tend == Status.STATUS_CHANGE_BIGGER) {
@@ -169,13 +172,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         // TODO: 15/12/30 1. add judgement when ReboundHorizontalScrollView is fullscreen
         // TODO: 15/12/30 2. Now when scroll direction is horizontal, the function lock scroll direction is not worked
         final int action = event.getAction();
-        final float x = event.getX();
-        final float y = event.getY();
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
                     reboundHori.onTouchEvent(event);
-                    return false;
+                    return true;
                 } else {
                     this.onTouch(reboundHori, event);
                     reboundHori.onTouchEvent(event);
@@ -188,16 +189,16 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         } else {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    mLastMotionX = x;
-                    mLastMotionY = y;
+                    mLastMotionX = event.getRawX();
+                    mLastMotionY = event.getRawY();
                     if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
                         canDeal = true;
                     } else {
                         canDeal = false;
                     }
                 case MotionEvent.ACTION_MOVE:
-                    final int deltaX = (int) (mLastMotionX - x);
-                    final int deltaY = (int) (mLastMotionY - y);
+                    final int deltaX = (int) (mLastMotionX - event.getRawX());
+                    final int deltaY = (int) (mLastMotionY - event.getRawY());
                     boolean xMove = Math.abs(deltaX) > Math.abs(deltaY);
                     if (xMove) {
                         FLAG = 1;
@@ -208,7 +209,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     if (!canDeal) {
                         if (FLAG == 1) {
                             reboundHori.onTouchEvent(event);
-                            return false;
+                            return true;
                         } else {
                             this.onTouch(reboundHori, event);
                             reboundHori.onTouchEvent(event);
@@ -220,6 +221,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     }
             }
         }
+
         return false;
     }
 
@@ -312,7 +314,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            // 用户按下触摸屏、快速移动后松开，由1个MotionEvent ACTION_DOWN, 多个ACTION_MOVE, 1个ACTION_UP触发
             return true;
         }
     }
@@ -327,6 +328,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
             FLAG = 0;
             isHandle = false;
             canDeal = false;
+            reboundHori.invalidate();
             return this.onTouchEvent(event);
         } else {
             return gestureDetector.onTouchEvent(event);

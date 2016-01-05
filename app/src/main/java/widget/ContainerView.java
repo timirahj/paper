@@ -76,7 +76,7 @@ public class ContainerView extends FrameLayout {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        FrameLayout.LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, linearParams);
@@ -95,7 +95,7 @@ public class ContainerView extends FrameLayout {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, layoutParams);
@@ -145,11 +145,6 @@ public class ContainerView extends FrameLayout {
         this.r = r;
         this.b = b;
         super.onLayout(changed, l, t, r, b);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override

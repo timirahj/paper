@@ -2,8 +2,10 @@ package widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -118,6 +120,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      * 加载下一张图片
      */
     protected void loadNextImg() {
+        setCenter();
         // 数组边界值计算
         if (mCurrentIndex == mAdapter.getCount() - 1) {
             return;
@@ -139,12 +142,15 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
+
+        Log.d("ReboundHorizontalScroll", "mFirstIndex:" + mFirstIndex);
     }
 
     /**
      * 加载前一张图片
      */
     protected void loadPreImg() {
+        setCenter();
         //如果当前已经是第一张，则返回
         if (mFirstIndex == 0)
             return;
@@ -260,6 +266,9 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             }
             mOnClickListener.onClick(v, mViewPos.get(v));
         }
+    }
+
+    private void setCenter() {
     }
 
     public void setOnItemClickListener(OnItemClickListener mOnClickListener) {

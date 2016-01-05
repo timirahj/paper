@@ -19,6 +19,7 @@ Now i'm still developing, lol....
 - [x] Add basic function of ReboundHorizontalScrollView and ViewPager.
 - [x] Add function of exchange ReboundHorizontalScrollView when ViewPager is changed.
 - [ ] Add method for ReboundHorizontalScrollView so it can just hold one page in screen.
+- [ ] Finish bug that can not scroll to border when ReboundHorizontalScrollView become bigger.
 
 ### License
 ```
