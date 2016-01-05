@@ -28,23 +28,6 @@
             android:layout_height="wrap_content"
             android:layout_gravity="bottom">
 
-            <!--<widget.ReboundHorizontalScrollView-->
-                <!--android:id="@+id/hrozontalscrollview"-->
-                <!--android:layout_width="wrap_content"-->
-                <!--android:layout_height="wrap_content"-->
-                <!--android:layout_marginTop="2dp"-->
-                <!--android:background="@android:color/transparent"-->
-                <!--android:scrollbars="none">-->
-
-                <!--<LinearLayout-->
-                    <!--android:id="@+id/gallery"-->
-                    <!--android:layout_width="wrap_content"-->
-                    <!--android:layout_height="wrap_content"-->
-                    <!--android:background="@android:color/transparent"-->
-                    <!--android:orientation="horizontal"-->
-                    <!--android:paddingLeft="1dp"/>-->
-
-            <!--</widget.ReboundHorizontalScrollView>-->
         </widget.ContainerView>
 
     </widget.PaperView>

@@ -122,20 +122,20 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         if (mCurrentIndex == mAdapter.getCount() - 1) {
             return;
         }
-        //移除第一张图片，且将水平滚动位置置0
+        // 移除第一张图片，且将水平滚动位置置0
         scrollTo(0, 0);
         mViewPos.remove(mContainer.getChildAt(0));
         mContainer.removeViewAt(0);
 
-        //获取下一张图片，并且设置onclick事件，且加入容器中
+        // 获取下一张图片，并且设置onclick事件，且加入容器中
         View view = mAdapter.getView(++mCurrentIndex, null, mContainer);
         view.setOnClickListener(this);
         mContainer.addView(view);
         mViewPos.put(view, mCurrentIndex);
 
-        //当前第一张图片小标
+        // 当前第一张图片小标
         mFirstIndex++;
-        //如果设置了滚动监听则触发
+        // 如果设置了滚动监听则触发
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
@@ -205,7 +205,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             mChildHeight = view.getMeasuredHeight();
             mChildWidth = view.getMeasuredWidth();
             // 计算每次加载多少个View
-            mCountOneScreen = mScreenWitdh / mChildWidth + 1;
+            mCountOneScreen = mScreenWitdh / mChildWidth + 4;
         }
         //初始化第一屏幕的元素
         initFirstScreenChildren(mCountOneScreen);

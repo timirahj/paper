@@ -20,7 +20,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -72,7 +71,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      */
     private final SpringSystem springSystem;
     private final Spring popAnimation;
-    private View layer;
+    private View reboundHori;
     private View viewPager;
 
     private GestureDetector gestureDetector;
@@ -111,10 +110,10 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         viewPager = getChildAt(0);
-        layer = getChildAt(1);
-        int contentHeight = layer.getHeight();
+        reboundHori = getChildAt(1);
+        int contentHeight = reboundHori.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
-        translateDistance = (double) (screen[1] - layer.getHeight()) / 2;
+        translateDistance = (double) (screen[1] - reboundHori.getHeight()) / 2;
     }
 
     private void popAnimation(boolean on) {
@@ -124,11 +123,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setPopAnimationProgress(float progress) {
         float bottomScale = transition(progress, 1f, SCALE);
-        layer.setScaleX(bottomScale);
-        layer.setScaleY(bottomScale);
+        reboundHori.setScaleX(bottomScale);
+        reboundHori.setScaleY(bottomScale);
 
         float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
-        layer.setTranslationY(-translate);
+        reboundHori.setTranslationY(-translate);
     }
 
     /**
@@ -175,11 +174,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
-                    layer.onTouchEvent(event);
+                    reboundHori.onTouchEvent(event);
                     return false;
                 } else {
-                    this.onTouch(layer, event);
-                    layer.onTouchEvent(event);
+                    this.onTouch(reboundHori, event);
+                    reboundHori.onTouchEvent(event);
                     return true;
                 }
             } else {
@@ -208,11 +207,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     isHandle = true;
                     if (!canDeal) {
                         if (FLAG == 1) {
-                            layer.onTouchEvent(event);
+                            reboundHori.onTouchEvent(event);
                             return false;
                         } else {
-                            this.onTouch(layer, event);
-                            layer.onTouchEvent(event);
+                            this.onTouch(reboundHori, event);
+                            reboundHori.onTouchEvent(event);
                             return true;
                         }
                     } else {
@@ -274,11 +273,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_BIGGER || status.preMode == Status.STATUS_NORMAL) {
                     // change bigger
                     float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
-                    layer.setScaleX(scaleValue);
-                    layer.setScaleY(scaleValue);
+                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
 
                     float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-                    layer.setTranslationY(-move);
+                    reboundHori.setTranslationY(-move);
 
                     popAnimation.setCurrentValue(scaleValue - 1);
 
@@ -293,8 +292,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_SMALL || status.preMode == Status.STATUS_BIGGER) {
                     // change smaller
                     float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
-                    layer.setScaleX(scaleValue);
-                    layer.setScaleY(scaleValue);
+                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
 
                     popAnimation.setCurrentValue(scaleValue);
 
@@ -324,7 +323,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            layer.onTouchEvent(event);
+            reboundHori.onTouchEvent(event);
             FLAG = 0;
             isHandle = false;
             canDeal = false;
