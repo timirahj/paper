@@ -19,7 +19,6 @@ package widget;
 import android.animation.Animator;
 import android.content.Context;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,17 +34,19 @@ import presenter.impl.HorizontalScrollViewAdapter;
  */
 public class ContainerView extends FrameLayout {
 
+    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+
     public static final int PREVIEW = 0;
     public static final int AFTERVIEW = 1;
+
+    private ReboundHorizontalScrollView real;
 
     private Context context;
 
     private AttributeSet attributeSet;
-
     private int r;
-    private int b;
 
-    private static final Interpolator INTERPOLATOR = new DecelerateInterpolator();
+    private int b;
 
     public ContainerView(Context context) {
         this(context, null);
@@ -68,11 +69,14 @@ public class ContainerView extends FrameLayout {
         return super.onTouchEvent(event);
     }
 
+    /**
+     * Init view
+     */
     private void initChild() {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        FrameLayout.LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams linearParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, linearParams);
@@ -80,6 +84,8 @@ public class ContainerView extends FrameLayout {
         scrollView.setHorizontalScrollBarEnabled(false);
 
         addView(scrollView, scrollParams);
+
+        real = (ReboundHorizontalScrollView) getChildAt(0);
     }
 
     /**
@@ -89,7 +95,7 @@ public class ContainerView extends FrameLayout {
         ReboundHorizontalScrollView scrollView = new ReboundHorizontalScrollView(context, attributeSet);
         LinearLayout linearLayout = new LinearLayout(context, attributeSet);
 
-        FrameLayout.LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
+        LayoutParams layoutParams = new LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.WRAP_CONTENT);
         ViewGroup.LayoutParams scrollParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
 
         scrollView.addView(linearLayout, layoutParams);
@@ -139,11 +145,6 @@ public class ContainerView extends FrameLayout {
         this.r = r;
         this.b = b;
         super.onLayout(changed, l, t, r, b);
-    }
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
     @Override

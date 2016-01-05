@@ -2,8 +2,10 @@ package widget;
 
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -66,10 +68,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     private int mFirstIndex;
     /**
-     * 当前第一个View
-     */
-    private View mFirstView;
-    /**
      * 数据适配器
      */
     private HorizontalScrollViewAdapter mAdapter;
@@ -103,7 +101,7 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         receiveChildInfo();
     }
 
-    private void receiveChildInfo() {
+    public void receiveChildInfo() {
         if (getChildCount() != 0) {
             firstChild = (ViewGroup) getChildAt(0);
         }
@@ -122,33 +120,37 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      * 加载下一张图片
      */
     protected void loadNextImg() {
+        setCenter();
         // 数组边界值计算
         if (mCurrentIndex == mAdapter.getCount() - 1) {
             return;
         }
-        //移除第一张图片，且将水平滚动位置置0
+        // 移除第一张图片，且将水平滚动位置置0
         scrollTo(0, 0);
         mViewPos.remove(mContainer.getChildAt(0));
         mContainer.removeViewAt(0);
 
-        //获取下一张图片，并且设置onclick事件，且加入容器中
+        // 获取下一张图片，并且设置onclick事件，且加入容器中
         View view = mAdapter.getView(++mCurrentIndex, null, mContainer);
         view.setOnClickListener(this);
         mContainer.addView(view);
         mViewPos.put(view, mCurrentIndex);
 
-        //当前第一张图片小标
+        // 当前第一张图片小标
         mFirstIndex++;
-        //如果设置了滚动监听则触发
+        // 如果设置了滚动监听则触发
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
+
+        Log.d("ReboundHorizontalScroll", "mFirstIndex:" + mFirstIndex);
     }
 
     /**
      * 加载前一张图片
      */
     protected void loadPreImg() {
+        setCenter();
         //如果当前已经是第一张，则返回
         if (mFirstIndex == 0)
             return;
@@ -208,10 +210,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             view.measure(w, h);
             mChildHeight = view.getMeasuredHeight();
             mChildWidth = view.getMeasuredWidth();
-//            mChildHeight = view.getMeasuredHeight();
             // 计算每次加载多少个View
-            mCountOneScreen = mScreenWitdh / mChildWidth + 1;
-
+            mCountOneScreen = mScreenWitdh / mChildWidth + 4;
         }
         //初始化第一屏幕的元素
         initFirstScreenChildren(mCountOneScreen);
@@ -238,7 +238,6 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
         if (mListener != null) {
             notifyCurrentImgChanged();
         }
-
     }
 
     @Override
@@ -255,16 +254,8 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
                     loadPreImg();
                 }
                 break;
-//            case MotionEvent.ACTION_UP:
-//                receiveChildInfo();
-//                smoothScrollToCurrent();
         }
         return super.onTouchEvent(ev);
-    }
-
-    public void smoothScrollToCurrent() {
-        int currentIndex = mFirstIndex + 1;
-        mContainer.getChildAt(currentIndex).getLeft();
     }
 
     @Override
@@ -275,6 +266,9 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
             }
             mOnClickListener.onClick(v, mViewPos.get(v));
         }
+    }
+
+    private void setCenter() {
     }
 
     public void setOnItemClickListener(OnItemClickListener mOnClickListener) {

@@ -40,6 +40,8 @@ import com.lumeng.paper.ScreenUtil;
 public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     private static final int SCROLL_MAX_DISTANCE = 400;
+    private static final int TOUCH_STATE_REST = 0;
+    private static final int TOUCH_STATE_SCROLLING = 1;
 
     public static boolean canDeal = false;
     /**
@@ -57,6 +59,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      *
      */
     private int FLAG = 0;
+
     /**
      * Value of magnification(放大率).
      */
@@ -72,13 +75,13 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      */
     private final SpringSystem springSystem;
     private final Spring popAnimation;
-    private View layer;
+    private View reboundHori;
     private View viewPager;
 
     private GestureDetector gestureDetector;
 
-    private float mLastMotionX;//滑动过程中，x方向的初始坐标
-    private float mLastMotionY;//滑动过程中，y方向的初始坐标
+    private float mLastMotionX;
+    private float mLastMotionY;
 
     public PaperView(Context context) {
         this(context, null);
@@ -111,10 +114,10 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         viewPager = getChildAt(0);
-        layer = getChildAt(1);
-        int contentHeight = layer.getHeight();
+        reboundHori = getChildAt(1);
+        int contentHeight = reboundHori.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
-        translateDistance = (double) (screen[1] - layer.getHeight()) / 2;
+        translateDistance = (double) (screen[1] - reboundHori.getHeight()) / 2;
     }
 
     private void popAnimation(boolean on) {
@@ -124,11 +127,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setPopAnimationProgress(float progress) {
         float bottomScale = transition(progress, 1f, SCALE);
-        layer.setScaleX(bottomScale);
-        layer.setScaleY(bottomScale);
+        reboundHori.setScaleX(bottomScale);
+        reboundHori.setScaleY(bottomScale);
 
         float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
-        layer.setTranslationY(-translate);
+        reboundHori.setTranslationY(-translate);
     }
 
     /**
@@ -150,7 +153,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         if (status.tend == Status.STATUS_CHANGE_BIGGER) {
@@ -170,16 +172,14 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         // TODO: 15/12/30 1. add judgement when ReboundHorizontalScrollView is fullscreen
         // TODO: 15/12/30 2. Now when scroll direction is horizontal, the function lock scroll direction is not worked
         final int action = event.getAction();
-        final float x = event.getX();
-        final float y = event.getY();
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
-                    layer.onTouchEvent(event);
-                    return false;
+                    reboundHori.onTouchEvent(event);
+                    return true;
                 } else {
-                    this.onTouch(layer, event);
-                    layer.onTouchEvent(event);
+                    this.onTouch(reboundHori, event);
+                    reboundHori.onTouchEvent(event);
                     return true;
                 }
             } else {
@@ -189,16 +189,16 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         } else {
             switch (action) {
                 case MotionEvent.ACTION_DOWN:
-                    mLastMotionX = x;
-                    mLastMotionY = y;
+                    mLastMotionX = event.getRawX();
+                    mLastMotionY = event.getRawY();
                     if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
                         canDeal = true;
                     } else {
                         canDeal = false;
                     }
                 case MotionEvent.ACTION_MOVE:
-                    final int deltaX = (int) (mLastMotionX - x);
-                    final int deltaY = (int) (mLastMotionY - y);
+                    final int deltaX = (int) (mLastMotionX - event.getRawX());
+                    final int deltaY = (int) (mLastMotionY - event.getRawY());
                     boolean xMove = Math.abs(deltaX) > Math.abs(deltaY);
                     if (xMove) {
                         FLAG = 1;
@@ -208,11 +208,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     isHandle = true;
                     if (!canDeal) {
                         if (FLAG == 1) {
-                            layer.onTouchEvent(event);
-                            return false;
+                            reboundHori.onTouchEvent(event);
+                            return true;
                         } else {
-                            this.onTouch(layer, event);
-                            layer.onTouchEvent(event);
+                            this.onTouch(reboundHori, event);
+                            reboundHori.onTouchEvent(event);
                             return true;
                         }
                     } else {
@@ -221,6 +221,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     }
             }
         }
+
         return false;
     }
 
@@ -274,11 +275,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_BIGGER || status.preMode == Status.STATUS_NORMAL) {
                     // change bigger
                     float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
-                    layer.setScaleX(scaleValue);
-                    layer.setScaleY(scaleValue);
+                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
 
                     float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-                    layer.setTranslationY(-move);
+                    reboundHori.setTranslationY(-move);
 
                     popAnimation.setCurrentValue(scaleValue - 1);
 
@@ -293,8 +294,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_SMALL || status.preMode == Status.STATUS_BIGGER) {
                     // change smaller
                     float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
-                    layer.setScaleX(scaleValue);
-                    layer.setScaleY(scaleValue);
+                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
 
                     popAnimation.setCurrentValue(scaleValue);
 
@@ -313,7 +314,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
         @Override
         public boolean onFling(MotionEvent e1, MotionEvent e2, float velocityX, float velocityY) {
-            // 用户按下触摸屏、快速移动后松开，由1个MotionEvent ACTION_DOWN, 多个ACTION_MOVE, 1个ACTION_UP触发
             return true;
         }
     }
@@ -324,10 +324,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            layer.onTouchEvent(event);
+            reboundHori.onTouchEvent(event);
             FLAG = 0;
             isHandle = false;
             canDeal = false;
+            reboundHori.invalidate();
             return this.onTouchEvent(event);
         } else {
             return gestureDetector.onTouchEvent(event);

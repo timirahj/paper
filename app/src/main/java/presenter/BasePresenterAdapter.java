@@ -27,6 +27,7 @@ import vu.Vu;
 /**
  * @author lumeng on 15/12/25.
  */
+@SuppressWarnings("unchecked")
 public abstract class BasePresenterAdapter<V extends Vu> extends BaseAdapter {
     protected V vu;
 
