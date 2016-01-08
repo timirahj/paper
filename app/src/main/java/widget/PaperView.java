@@ -40,8 +40,6 @@ import com.lumeng.paper.ScreenUtil;
 public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     private static final int SCROLL_MAX_DISTANCE = 400;
-    private static final int TOUCH_STATE_REST = 0;
-    private static final int TOUCH_STATE_SCROLLING = 1;
 
     public static boolean canDeal = false;
     /**
@@ -129,13 +127,13 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setPopAnimationProgress(float progress) {
         float bottomScale = transition(progress, 1f, SCALE);
-//        reboundHori.setScaleX(bottomScale);
-//        reboundHori.setScaleY(bottomScale);
-
+        Log.d("PaperView", "bottomScale:" + bottomScale);
         callback.onSizeChange(bottomScale);
+//        reboundHori.setScaleX(bottomScale);
+        reboundHori.setScaleY(bottomScale);
 
-//        float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
-//        reboundHori.setTranslationY(-translate);
+        float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
+        reboundHori.setTranslationY(-translate);
     }
 
     /**
@@ -279,12 +277,14 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_BIGGER || status.preMode == Status.STATUS_NORMAL) {
                     // change bigger
                     float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
-//                    reboundHori.setScaleX(scaleValue);
-//                    reboundHori.setScaleY(scaleValue);
-                    callback.onSizeChange(scaleValue);
 
-//                    float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-//                    reboundHori.setTranslationY(-move);
+                    callback.onSizeChange(scaleValue);
+//                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
+                    Log.d("PaperView", "scaleValue:" + scaleValue);
+
+                    float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
+                    reboundHori.setTranslationY(-move);
 
                     popAnimation.setCurrentValue(scaleValue - 1);
 
@@ -299,9 +299,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 if (status.preMode == Status.STATUS_CHANGE_SMALL || status.preMode == Status.STATUS_BIGGER) {
                     // change smaller
                     float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
-//                    reboundHori.setScaleX(scaleValue);
-//                    reboundHori.setScaleY(scaleValue);
+
                     callback.onSizeChange(scaleValue);
+//                    reboundHori.setScaleX(scaleValue);
+                    reboundHori.setScaleY(scaleValue);
+                    Log.d("PaperView", "scaleValue:" + scaleValue);
 
                     popAnimation.setCurrentValue(scaleValue);
 

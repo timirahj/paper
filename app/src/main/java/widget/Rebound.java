@@ -35,7 +35,9 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
 
     private HorizontalScrollViewAdapter adapter;
 
-    private int childWidth, childHeight;
+    private int childWidth, childHeight, width, height;
+
+    private int parentWidth, parentHeight;
 
     private ContainerView containerView;
 
@@ -59,6 +61,14 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
 
         childHeight = container.getChildAt(0).getMeasuredHeight();
         childWidth = container.getChildAt(0).getMeasuredWidth();
+
+        parentHeight = getMeasuredHeight();
+        parentWidth = getMeasuredWidth();
+
+        if (width == 0 && height == 0) {
+            width = childWidth;
+            height = childHeight;
+        }
 
         paperView.setSizeChangeCallback(this);
     }
@@ -109,9 +119,11 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
     public void onSizeChange(float scale) {
         for (int i = 0; i < container.getChildCount(); i++) {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getChildAt(i).getLayoutParams();
-            params.width = (int) (childWidth * scale);
-            params.height = (int) (childHeight * scale);
+            params.width = (int) (width * scale);
+//            params.height = (int) (height * scale);
         }
+
         container.requestLayout();
+
     }
 }
