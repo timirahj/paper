@@ -41,11 +41,10 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
     private HorizontalScrollViewAdapter adapter;
 
     private int childWidth, childHeight, width, height;
-    private int parentWidth, parentHeight;
+    private int parentHeight;
     private int currentPage = 0;
     private int childCount;
     private int oldWidth;
-    private int fingerPosition;
 
     private List<Integer> viewList = new ArrayList<Integer>();
 
@@ -71,7 +70,6 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
         childWidth = container.getChildAt(0).getMeasuredWidth();
 
         parentHeight = getMeasuredHeight();
-        parentWidth = getMeasuredWidth();
 
         if (width == 0 && height == 0) {
             width = oldWidth = childWidth;
@@ -84,7 +82,6 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
         switch (ev.getAction()) {
             case MotionEvent.ACTION_DOWN:
                 float downX = ev.getX();
-                Log.d("Rebound", "downX:" + downX);
                 getFingerPoi(downX);
                 break;
         }
@@ -96,13 +93,8 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
      */
     private void getFingerPoi(float downX) {
         for (int i = 0; i < childCount; i++) {
-            Log.d("Rebound", "childCount:" + childCount);
-//            if (ScreenUtil.isViewUnder(container.getChildAt(i), (int) downX, (int) downY)) {
-//                fingerPosition = i;
-//                break;
-//            }
-            if (viewList.get(i) < downX && (viewList.get(i) + childWidth) > downX) {
-                Log.d("Rebound", "i:" + i);
+            if ((viewList.get(i) - getScrollX()) >= downX && (viewList.get(i) - getScrollX()) <= (downX + childWidth)) {
+                currentPage = i;
                 break;
             }
         }
@@ -123,7 +115,7 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
         if (container != null) {
             for (int i = 0; i < container.getChildCount(); i++) {
                 if (((View) container.getChildAt(i)).getWidth() > 0) {
-                    viewList.add(((View) container.getChildAt(i)).getLeft());
+                    viewList.add(((View) container.getChildAt(i)).getRight());
                 }
             }
         }
@@ -196,9 +188,19 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
         this.listener = listener;
     }
 
+    /**
+     * I add this method because cellphone will keep drawing view when user do scale operation. So the width of every
+     * cell is keep changing. But what i want is i can keep the cell which user's finger in is always on screen. So i
+     * must do scroll operation to keep that cell on screen. Otherwise the cell which user's finger in will be
+     * supplanted out of screen. I think it is very unfriendly to user.
+     *
+     * And you can try to set {@link #onSizeChange(float, boolean)}'s body null, and see what will happen.
+     *
+     * If you have any hesitation about this method, Please send E-Mail to <b>jiahehz@gmail.com</b> or create new issue.
+     * I will keep in touch with you if you have any good idea or issue.
+     */
     @Override
     public void onSizeChange(float scale, boolean isBigger) {
-        // TODO: 16/1/9 add status judgement. e.g. NORMAL --> BIGGER or BIGGER --> NORMAL
         int newWidth = 0;
         for (int i = 0; i < container.getChildCount(); i++) {
             LinearLayout.LayoutParams params = (LinearLayout.LayoutParams) container.getChildAt(i).getLayoutParams();
@@ -212,9 +214,9 @@ public class Rebound extends HorizontalScrollView implements View.OnClickListene
         int scrollDistance = newWidth - oldWidth;
 
         if (isBigger) {
-            smoothScrollBy(scrollDistance, parentHeight);
+            smoothScrollBy(scrollDistance * (currentPage + 1), parentHeight);
         } else {
-            smoothScrollBy(-scrollDistance, parentHeight);
+            smoothScrollBy(-scrollDistance * (currentPage + 1), parentHeight);
         }
 
         oldWidth = newWidth;
