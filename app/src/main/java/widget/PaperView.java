@@ -127,9 +127,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setPopAnimationProgress(float progress) {
         float bottomScale = transition(progress, 1f, SCALE);
-        Log.d("PaperView", "bottomScale:" + bottomScale);
-        callback.onSizeChange(bottomScale);
-//        reboundHori.setScaleX(bottomScale);
+        if (status.tend == Status.STATUS_CHANGE_BIGGER) {
+            callback.onSizeChange(bottomScale, true);
+        } else {
+            callback.onSizeChange(bottomScale, false);
+        }
         reboundHori.setScaleY(bottomScale);
 
         float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
@@ -193,7 +195,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                 case MotionEvent.ACTION_DOWN:
                     mLastMotionX = event.getRawX();
                     mLastMotionY = event.getRawY();
-                    if (isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
+                    if (ScreenUtil.isViewUnder(viewPager, (int) event.getX(), (int) event.getY())) {
                         canDeal = true;
                     } else {
                         canDeal = false;
@@ -225,25 +227,6 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         }
 
         return false;
-    }
-
-    /**
-     * Determine if the supplied view is under the given point in the parent view's
-     * coordinate system
-     *
-     * @param view Child view of the paren to hit test
-     * @param x    X position to test in the parent's coordinate system
-     * @param y    Y position to test in the parent's coordinate system
-     * @return true if the supplied view is under the given point, false otherwise
-     */
-    private boolean isViewUnder(View view, int x, int y) {
-        if (view == null) {
-            return false;
-        }
-        return x >= view.getLeft() &&
-                x < view.getRight() &&
-                y >= view.getTop() &&
-                y < view.getBottom();
     }
 
     private class gestursListener implements GestureDetector.OnGestureListener {
@@ -278,10 +261,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     // change bigger
                     float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
 
-                    callback.onSizeChange(scaleValue);
-//                    reboundHori.setScaleX(scaleValue);
+                    callback.onSizeChange(scaleValue, true);
                     reboundHori.setScaleY(scaleValue);
-                    Log.d("PaperView", "scaleValue:" + scaleValue);
 
                     float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
                     reboundHori.setTranslationY(-move);
@@ -300,10 +281,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     // change smaller
                     float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
 
-                    callback.onSizeChange(scaleValue);
-//                    reboundHori.setScaleX(scaleValue);
+                    callback.onSizeChange(scaleValue, false);
                     reboundHori.setScaleY(scaleValue);
-                    Log.d("PaperView", "scaleValue:" + scaleValue);
 
                     popAnimation.setCurrentValue(scaleValue);
 
@@ -361,7 +340,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     }
 
     public interface OnSizeChangeCallback {
-        void onSizeChange(float scale);
+        void onSizeChange(float scale, boolean isBigger);
     }
 
     public void setSizeChangeCallback(OnSizeChangeCallback callback) {

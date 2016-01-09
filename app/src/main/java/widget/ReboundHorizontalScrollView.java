@@ -151,29 +151,29 @@ public class ReboundHorizontalScrollView extends HorizontalScrollView implements
      */
     protected void loadPreImg() {
         setCenter();
-        //如果当前已经是第一张，则返回
+        // 如果当前已经是第一张，则返回
         if (mFirstIndex == 0)
             return;
-        //获得当前应该显示为第一张图片的下标
+        // 获得当前应该显示为第一张图片的下标
         int index = mCurrentIndex - mCountOneScreen;
         if (index >= 0) {
 //			mContainer = (LinearLayout) getChildAt(0);
-            //移除最后一张
+            // 移除最后一张
             int oldViewPos = mContainer.getChildCount() - 1;
             mViewPos.remove(mContainer.getChildAt(oldViewPos));
             mContainer.removeViewAt(oldViewPos);
 
-            //将此View放入第一个位置
+            // 将此View放入第一个位置
             View view = mAdapter.getView(index, null, mContainer);
             mViewPos.put(view, index);
             mContainer.addView(view, 0);
             view.setOnClickListener(this);
-            //水平滚动位置向左移动view的宽度个像素
+            // 水平滚动位置向左移动view的宽度个像素
             scrollTo(mChildWidth, 0);
             //当前位置--，当前第一个显示的下标--
             mCurrentIndex--;
             mFirstIndex--;
-            //回调
+            // 回调
             if (mListener != null) {
                 notifyCurrentImgChanged();
             }
