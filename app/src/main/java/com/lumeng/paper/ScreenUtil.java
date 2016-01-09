@@ -18,6 +18,7 @@ package com.lumeng.paper;
 
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.view.View;
 import android.view.WindowManager;
 
 /**
@@ -36,5 +37,24 @@ public class ScreenUtil {
         a[0] = outMetrics.widthPixels;
         a[1] = outMetrics.heightPixels;
         return a;
+    }
+
+    /**
+     * Determine if the supplied view is under the given point in the parent view's
+     * coordinate system
+     *
+     * @param view Child view of the paren to hit test
+     * @param x    X position to test in the parent's coordinate system
+     * @param y    Y position to test in the parent's coordinate system
+     * @return true if the supplied view is under the given point, false otherwise
+     */
+    public static boolean isViewUnder(View view, int x, int y) {
+        if (view == null) {
+            return false;
+        }
+        return x >= view.getLeft() &&
+                x < view.getRight() &&
+                y >= view.getTop() &&
+                y < view.getBottom();
     }
 }
