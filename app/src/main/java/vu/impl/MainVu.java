@@ -1,5 +1,5 @@
 /*
- * Copyright 2015 LuMeng
+ * Copyright 2015-2016 LuMeng
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package vu.impl;
 
 import android.support.v4.view.PagerAdapter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;

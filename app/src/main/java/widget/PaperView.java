@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2015 LuMeng
+ * Copyright 2015-2016 LuMeng
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -75,7 +74,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
      */
     private final SpringSystem springSystem;
     private final Spring popAnimation;
-    private View reboundHori;
+    private ContainerView containerView;
     private View viewPager;
 
     private GestureDetector gestureDetector;
@@ -95,7 +94,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         super(context, attrs, defStyle);
 
         springSystem = SpringSystem.create();
-        gestureDetector = new GestureDetector(context, new gestursListener());
+        gestureDetector = new GestureDetector(context, new gestureListener());
 
         popAnimation = springSystem.createSpring()
                 .setSpringConfig(SpringConfig.fromBouncinessAndSpeed(5, 10))
@@ -103,6 +102,17 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     @Override
                     public void onSpringUpdate(Spring spring) {
                         setPopAnimationProgress((float) spring.getCurrentValue());
+                    }
+
+                    @Override
+                    public void onSpringAtRest(Spring spring) {
+                        if (callback != null) {
+                            if (status.tend == Status.STATUS_CHANGE_BIGGER) {
+                                callback.onViewRest(true, true);
+                            } else if (status.tend == Status.STATUS_CHANGE_SMALL) {
+                                callback.onViewRest(true, false);
+                            }
+                        }
                     }
                 });
 
@@ -114,10 +124,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
         super.onLayout(changed, left, top, right, bottom);
         viewPager = getChildAt(0);
-        reboundHori = getChildAt(1);
-        int contentHeight = reboundHori.getHeight();
+        containerView = (ContainerView) getChildAt(1);
+
+        int contentHeight = containerView.getHeight();
         SCALE = (float) screen[1] / (float) contentHeight;
-        translateDistance = (double) (screen[1] - reboundHori.getHeight()) / 2;
+        translateDistance = (double) (screen[1] - containerView.getHeight()) / 2;
     }
 
     private void popAnimation(boolean on) {
@@ -127,15 +138,21 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setPopAnimationProgress(float progress) {
         float bottomScale = transition(progress, 1f, SCALE);
-        if (status.tend == Status.STATUS_CHANGE_BIGGER) {
-            callback.onSizeChange(bottomScale, true);
-        } else {
-            callback.onSizeChange(bottomScale, false);
+
+        if (callback != null) {
+            if (status.tend == Status.STATUS_CHANGE_BIGGER) {
+                callback.onSizeChange(bottomScale, true);
+                callback.onViewRest(false, false);
+            } else {
+                callback.onSizeChange(bottomScale, false);
+            }
+            callback.onViewRest(false, false);
         }
-        reboundHori.setScaleY(bottomScale);
+
+        containerView.setScaleY(bottomScale);
 
         float translate = (float) SpringUtil.mapValueFromRangeToRange(popAnimation.getCurrentValue(), 0, 1, 0, PaperView.translateDistance);
-        reboundHori.setTranslationY(-translate);
+        containerView.setTranslationY(-translate);
     }
 
     /**
@@ -179,11 +196,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         if (isHandle) {
             if (!canDeal) {
                 if (FLAG == 1) {
-                    reboundHori.onTouchEvent(event);
+                    containerView.onTouchEvent(event);
                     return true;
                 } else {
-                    this.onTouch(reboundHori, event);
-                    reboundHori.onTouchEvent(event);
+                    this.onTouch(containerView, event);
+                    containerView.onTouchEvent(event);
                     return true;
                 }
             } else {
@@ -212,11 +229,11 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     isHandle = true;
                     if (!canDeal) {
                         if (FLAG == 1) {
-                            reboundHori.onTouchEvent(event);
+                            containerView.onTouchEvent(event);
                             return true;
                         } else {
-                            this.onTouch(reboundHori, event);
-                            reboundHori.onTouchEvent(event);
+                            this.onTouch(containerView, event);
+                            containerView.onTouchEvent(event);
                             return true;
                         }
                     } else {
@@ -229,7 +246,7 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
         return false;
     }
 
-    private class gestursListener implements GestureDetector.OnGestureListener {
+    private class gestureListener implements GestureDetector.OnGestureListener {
 
         @Override
         public boolean onDown(MotionEvent e) {
@@ -261,12 +278,13 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     // change bigger
                     float scaleValue = 1 + Math.abs(distance) / SCROLL_MAX_DISTANCE;
 
-                    callback.onSizeChange(scaleValue, true);
-                    reboundHori.setScaleY(scaleValue);
+                    if (callback != null) {
+                        callback.onSizeChange(scaleValue, true);
+                    }
+                    containerView.setScaleY(scaleValue);
 
                     float move = (float) Math.abs(distance) / SCROLL_MAX_DISTANCE * (float) translateDistance;
-                    reboundHori.setTranslationY(-move);
-
+                    containerView.setTranslationY(-move);
                     popAnimation.setCurrentValue(scaleValue - 1);
 
                     status.preMode = Status.STATUS_CHANGE_BIGGER;
@@ -281,9 +299,10 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
                     // change smaller
                     float scaleValue = 1 - distance / SCROLL_MAX_DISTANCE;
 
-                    callback.onSizeChange(scaleValue, false);
-                    reboundHori.setScaleY(scaleValue);
-
+                    if (callback != null) {
+                        callback.onSizeChange(scaleValue, false);
+                    }
+                    containerView.setScaleY(scaleValue);
                     popAnimation.setCurrentValue(scaleValue);
 
                     status.preMode = Status.STATUS_CHANGE_SMALL;
@@ -311,11 +330,10 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     @Override
     public boolean onTouch(View v, MotionEvent event) {
         if (event.getAction() == MotionEvent.ACTION_UP) {
-            reboundHori.onTouchEvent(event);
+            containerView.onTouchEvent(event);
             FLAG = 0;
             isHandle = false;
             canDeal = false;
-            reboundHori.invalidate();
             return this.onTouchEvent(event);
         } else {
             return gestureDetector.onTouchEvent(event);
@@ -323,7 +341,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
     }
 
     /**
-     * This class is used for mark, mark status of bottom view
+     * This class is used for mark, mark status of bottom view. So i can get state of {@link Rebound}
+     * at anywhere i want.
      */
     private static class Status {
         /**
@@ -341,6 +360,8 @@ public class PaperView extends FrameLayout implements View.OnTouchListener {
 
     public interface OnSizeChangeCallback {
         void onSizeChange(float scale, boolean isBigger);
+
+        void onViewRest(boolean isRest, boolean isBigger);
     }
 
     public void setSizeChangeCallback(OnSizeChangeCallback callback) {
