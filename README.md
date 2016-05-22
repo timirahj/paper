@@ -1,6 +1,6 @@
 # paper
 
-======
+### deprecated temporarily cuz work
 
 ### Introduce
 Personal developer, just want to copy the interface of Paper in IOS.
